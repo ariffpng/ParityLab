@@ -6,7 +6,7 @@
 > The 4.4000 MYR/USD starting spot rate and every inflation and interest rate in this project are controlled
 > teaching values, not market quotations. Nothing in the app is a live rate or a forecast.
 
-**Live demo:** _link added once the GitHub Pages deployment is live._
+**Live demo:** <https://ariffpng.github.io/ParityLab/>
 
 ParityLab is an offline, single-page web app built for the UTP **GFB3043 / GEB3043 International Financial
 Management** group project (FinBridge AI Innovation Challenge). It helps **non-finance undergraduates** see how an
