@@ -1,0 +1,589 @@
+@import 'tailwindcss';
+
+/* ParityLab v2 design tokens. 60-30-10: tinted
+   neutral background and white cards (~60%), navy structure (~30%), amber
+   accent (~10%, country and direction colours included). Components use these
+   tokens only — no hex values outside this block. Text colours meet WCAG AA
+   contrast; amber is never used as text on white. */
+@theme {
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', Consolas, monospace;
+
+  /* Type scale: 12 / 14 / 16 / 20 / 28 / 40 / 64 / 80 / 96 px */
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.4;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.45;
+  --text-base: 1rem;
+  --text-base--line-height: 1.55;
+  --text-lg: 1.25rem;
+  --text-lg--line-height: 1.45;
+  --text-xl: 1.75rem;
+  --text-xl--line-height: 1.25;
+  --text-2xl: 2.5rem;
+  --text-2xl--line-height: 1.15;
+  --text-3xl: 4rem;
+  --text-3xl--line-height: 1.05;
+  --text-4xl: 5rem;
+  --text-4xl--line-height: 1;
+  --text-5xl: 6rem;
+  --text-5xl--line-height: 1;
+
+  /* Dominant neutral */
+  --color-bg: #eef2f7;
+  --color-surface: #ffffff;
+  --color-surface-2: #f6f8fb;
+
+  /* Structural */
+  --color-ink: #13243a;
+  --color-ink-2: #3c4e66;
+  --color-ink-3: #53647c;
+  --color-line: #d3dce8;
+  --color-line-strong: #7a8ba3;
+  --color-panel: #13243a;
+  --color-panel-2: #1d3350;
+  --color-panel-line: #6e86a6;
+  --color-on-panel: #ffffff;
+  --color-on-panel-2: #c2cedf;
+
+  /* Accent */
+  --color-accent: #f2a93b;
+  --color-accent-strong: #d98a16;
+  --color-accent-soft: #fdf0db;
+  --color-on-accent: #13243a;
+
+  /* Country identity (marks; *-ink for text, *-on-dark for the navy panel) */
+  --color-my: #14a39a;
+  --color-my-ink: #0a6e68;
+  --color-my-soft: #e0f4f2;
+  --color-my-on-dark: #4fd1c5;
+  --color-us: #5b5bd6;
+  --color-us-ink: #4343b0;
+  --color-us-soft: #e9e9fb;
+  --color-us-on-dark: #a5a5f3;
+
+  /* Direction (always paired with an arrow and a word) */
+  --color-up: #1e9e62;
+  --color-up-ink: #12704a;
+  --color-up-soft: #e3f5ec;
+  --color-down: #d9534f;
+  --color-down-ink: #a3322f;
+  --color-down-soft: #fbe9e8;
+  --color-flat: #8592a6;
+  --color-flat-soft: #edf0f5;
+
+  /* Notices and errors */
+  --color-notice-soft: #fff4df;
+  --color-notice-ink: #6b4100;
+  --color-error: #a3322f;
+  --color-error-on-dark: #ffb4a9;
+}
+
+@layer base {
+  html {
+    background: var(--color-bg);
+    color: var(--color-ink);
+    -webkit-text-size-adjust: 100%;
+    --focus-ring: var(--color-ink);
+    /* Keep the scrollbar's space when a drawer locks page scrolling, so nothing shifts sideways. */
+    scrollbar-gutter: stable;
+  }
+  /* Presentation mode: every rem-based size scales up for screen recording. */
+  html.presentation {
+    font-size: 118.75%;
+  }
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 1.55;
+    background: var(--color-bg);
+  }
+  /* Dark surfaces (nav bar, inputs panel) switch the focus ring to amber. */
+  .on-dark {
+    --focus-ring: var(--color-accent);
+  }
+  :focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  a {
+    color: inherit;
+    text-underline-offset: 3px;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  [hidden] {
+    display: none !important;
+  }
+}
+
+@layer components {
+  /* 12-column page grid: max 1280 px, 24 px gutters, 16/24 px side margins. */
+  .page {
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+  @media (min-width: 48rem) {
+    .page {
+      padding-inline: 1.5rem;
+    }
+  }
+  .grid-12 {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: 16px;
+    box-shadow:
+      0 1px 2px rgb(19 36 58 / 0.05),
+      0 8px 24px rgb(19 36 58 / 0.04);
+    min-width: 0;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    font-weight: 650;
+    font-size: var(--text-base);
+    line-height: 1.2;
+    border: 1px solid var(--color-line-strong);
+    background: var(--color-surface);
+    color: var(--color-ink);
+    cursor: pointer;
+    text-decoration: none;
+    transition:
+      background-color 150ms ease-out,
+      border-color 150ms ease-out,
+      transform 150ms ease-out;
+  }
+  .btn:hover {
+    background: var(--color-surface-2);
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .btn-primary {
+    background: var(--color-accent);
+    border-color: var(--color-accent-strong);
+    color: var(--color-on-accent);
+  }
+  .btn-primary:hover {
+    background: var(--color-accent-strong);
+  }
+  .btn-lg {
+    min-height: 3.5rem;
+    padding: 0.75rem 1.5rem;
+    font-size: var(--text-lg);
+    border-radius: 14px;
+  }
+  .btn-sm {
+    min-height: 2.25rem;
+    padding: 0.25rem 0.75rem;
+    font-size: var(--text-sm);
+    border-radius: 10px;
+  }
+  .btn-icon {
+    min-height: 2.5rem;
+    min-width: 2.5rem;
+    padding: 0.5rem;
+  }
+  .btn-dark {
+    background: transparent;
+    border-color: var(--color-panel-line);
+    color: var(--color-on-panel);
+  }
+  .btn-dark:hover {
+    background: var(--color-panel-2);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-height: 2.25rem;
+    padding: 0.25rem 0.875rem;
+    border-radius: 999px;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    border: 1px solid var(--color-line-strong);
+    background: var(--color-surface);
+    color: var(--color-ink);
+    cursor: pointer;
+    transition: background-color 150ms ease-out;
+  }
+  .chip:hover {
+    background: var(--color-surface-2);
+  }
+  /* Selected: fill plus an inset outline (not colour alone), with no change in size. */
+  .chip[aria-pressed='true'] {
+    background: var(--color-accent);
+    border-color: var(--color-on-accent);
+    color: var(--color-on-accent);
+    box-shadow: inset 0 0 0 1px var(--color-on-accent);
+  }
+  .chip-dark {
+    background: transparent;
+    border-color: var(--color-panel-line);
+    color: var(--color-on-panel);
+  }
+  .chip-dark:hover {
+    background: var(--color-panel-2);
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 999px;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-line);
+    color: var(--color-ink-2);
+    white-space: nowrap;
+  }
+  .tag-dark {
+    background: var(--color-panel-2);
+    border-color: var(--color-panel-line);
+    color: var(--color-on-panel-2);
+  }
+
+  .field {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.375rem 0.625rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: 10px;
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font-size: var(--text-lg);
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+  /* Invalid state thickens the border with an inset shadow, so the field never changes size. */
+  .field[aria-invalid='true'] {
+    border-color: var(--color-error);
+    box-shadow: inset 0 0 0 1px var(--color-error);
+    background: var(--color-down-soft);
+  }
+  .field-dark {
+    background: var(--color-panel-2);
+    border-color: var(--color-panel-line);
+    color: var(--color-on-panel);
+  }
+  .field-dark[aria-invalid='true'] {
+    border-color: var(--color-error-on-dark);
+    box-shadow: inset 0 0 0 1px var(--color-error-on-dark);
+    background: var(--color-panel-2);
+  }
+
+  .link-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: var(--text-sm);
+    font-weight: 650;
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+    border-radius: 6px;
+  }
+  .link-more:hover {
+    text-decoration-color: var(--color-ink);
+  }
+  .on-dark .link-more {
+    color: var(--color-on-panel);
+  }
+  .on-dark .link-more:hover {
+    text-decoration-color: var(--color-on-panel);
+  }
+  .btn-math {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-height: 2.25rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 10px;
+    font-size: var(--text-sm);
+    font-weight: 650;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-line);
+    color: var(--color-ink);
+    cursor: pointer;
+  }
+  .btn-math:hover {
+    border-color: var(--color-line-strong);
+  }
+
+  .eyebrow {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+  }
+
+  .hero-number {
+    font-weight: 750;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    background-image: linear-gradient(var(--color-accent), var(--color-accent));
+    background-size: 100% 0.12em;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    padding-bottom: 0.08em;
+  }
+
+  /* The guided lesson rings the collapsed phone sheet when it points at an input. */
+  @media (max-width: 47.99rem) {
+    .lesson-ring-mobile {
+      outline: 4px solid var(--color-accent);
+      outline-offset: -4px;
+    }
+  }
+  .highlight-ring {
+    box-shadow:
+      0 0 0 3px var(--color-bg),
+      0 0 0 7px var(--color-accent);
+    scroll-margin: 6rem;
+  }
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-base);
+  }
+  .data-table th,
+  .data-table td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--color-line);
+    text-align: left;
+    vertical-align: top;
+  }
+  .data-table thead th {
+    font-size: var(--text-sm);
+    color: var(--color-ink-2);
+    font-weight: 700;
+    background: var(--color-surface-2);
+    border-bottom: 1px solid var(--color-line-strong);
+  }
+  .data-table td.num,
+  .data-table th.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+}
+
+/* Horizontal scrollers without a visible scrollbar (the mobile nav row). */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Scroll containers must be positioned so absolutely positioned screen-reader
+   text inside wide tables is clipped instead of widening the page. */
+.overflow-x-auto {
+  position: relative;
+}
+
+/* Range sliders: large thumb for touch and video; amber thumb on the navy panel. */
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 2rem;
+  background: transparent;
+  cursor: pointer;
+  --track: var(--color-line);
+  --fill: var(--color-ink-2);
+  --thumb: var(--color-accent);
+  --thumb-edge: var(--color-ink);
+}
+input[type='range'].range-dark {
+  --track: var(--color-panel-2);
+  --fill: var(--color-on-panel-2);
+  --thumb-edge: var(--color-panel);
+}
+input[type='range']::-webkit-slider-runnable-track {
+  height: 0.5rem;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--fill) 0 var(--pct, 50%), var(--track) var(--pct, 50%) 100%);
+}
+input[type='range']::-moz-range-track {
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--track);
+}
+input[type='range']::-moz-range-progress {
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--fill);
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: -0.5rem;
+  border-radius: 50%;
+  background: var(--thumb);
+  border: 3px solid var(--thumb-edge);
+}
+input[type='range']::-moz-range-thumb {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  background: var(--thumb);
+  border: 3px solid var(--thumb-edge);
+}
+
+/* KaTeX: long substituted formulas scroll inside their own box instead of the page. */
+.katex-display {
+  margin: 0.25rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25rem 0;
+}
+.katex {
+  font-size: 1.08em;
+}
+
+/* Motion: short ease-out transitions; everything is instant under reduced motion. */
+.seesaw-beam {
+  transform-box: view-box;
+  transition: transform 350ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.seesaw-settle {
+  animation: seesaw-settle 1100ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes seesaw-settle {
+  from {
+    transform: rotate(0deg);
+  }
+}
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgb(242 169 59 / 0.7);
+  }
+  100% {
+    box-shadow: 0 0 0 10px rgb(242 169 59 / 0);
+  }
+}
+.pulse {
+  animation: pulse-ring 700ms ease-out;
+}
+.flow-flash {
+  animation: flow-flash 700ms ease-out;
+}
+@keyframes flow-flash {
+  from {
+    stroke: var(--color-accent);
+  }
+}
+.drawer-panel {
+  animation: drawer-in 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes drawer-in {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+}
+@media (max-width: 47.99rem) {
+  @keyframes drawer-in {
+    from {
+      transform: translateY(24px);
+      opacity: 0;
+    }
+  }
+}
+.fade-in {
+  animation: fade-in 300ms ease-out;
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+.strike {
+  position: relative;
+}
+.strike::after {
+  content: '';
+  position: absolute;
+  left: -4%;
+  right: -4%;
+  top: 52%;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--color-down);
+  transform-origin: left center;
+  animation: strike-in 400ms ease-out both;
+}
+@keyframes strike-in {
+  from {
+    transform: scaleX(0);
+  }
+}
+.confetti {
+  position: absolute;
+  top: -10px;
+  width: 10px;
+  height: 14px;
+  border-radius: 2px;
+  animation: confetti-fall 1600ms ease-in forwards;
+}
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(260px) rotate(540deg);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+  .confetti {
+    display: none;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
