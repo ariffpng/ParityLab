@@ -391,6 +391,21 @@ describe('Compare screen', () => {
     expect(within(screen.getByRole('table', { name: /key results/ })).getByText(expected)).toBeInTheDocument();
   });
 
+  it('shows Scenario A as the locked baseline above Scenario B, unchanged when B changes', async () => {
+    const user = userEvent.setup();
+    renderAt('compare');
+    const a = screen.getByTestId('scenario-a');
+    expect(within(a).getByRole('heading', { name: 'Scenario A Baseline (locked)' })).toBeInTheDocument();
+    const text = () => within(a).getAllByRole('definition').map((d) => d.textContent);
+    expect(text()).toEqual(['2.50%', '3.00%', '1.50%', 'US$1 = RM 4.4000']);
+    expect(within(a).queryByRole('button')).toBeNull();
+    expect(within(a).queryByRole('textbox')).toBeNull();
+    const b = screen.getByRole('heading', { name: /Scenario B/ }).closest('section')!;
+    expect(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: /Extreme MY/ }));
+    expect(text()).toEqual(['2.50%', '3.00%', '1.50%', 'US$1 = RM 4.4000']);
+  });
+
   it('invalid Scenario B input hides the comparison', async () => {
     const user = userEvent.setup();
     renderAt('compare');

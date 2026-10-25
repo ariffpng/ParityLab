@@ -1,16 +1,17 @@
 import { useId, useRef, useState, type KeyboardEvent } from 'react';
 import type { Evaluation } from '../lib/evaluate';
 import type { RawInputs, FieldKey } from '../lib/validation';
-import type { PresetId } from '../lib/scenarios';
+import { PRESETS, type PresetId } from '../lib/scenarios';
 import type { NamedScenario } from '../lib/exportSummary';
 import { activePresetId } from '../lib/chips';
+import { formatInputPct, formatSpot } from '../lib/format';
 import { learnRoute } from '../routes';
 import { EXPORT_NOTE } from '../content/about';
 import { ComparisonTable, SimpleCompareTable } from '../components/ComparisonTable';
 import { DumbbellChart } from '../components/DumbbellChart';
 import { RateField, SpotField } from '../components/Fields';
 import { Heatmap } from '../components/Heatmap';
-import { AlertIcon, ChevronIcon, CopyIcon, DownloadIcon } from '../components/Icons';
+import { AlertIcon, ChevronIcon, CopyIcon, DownloadIcon, LockIcon } from '../components/Icons';
 import { PresetChips } from '../components/PresetChips';
 import { LearnMoreLink } from '../components/RouteLink';
 import { SensitivityCurve } from '../components/SensitivityCurve';
@@ -48,6 +49,7 @@ export function CompareView(props: Props) {
     <>
       <PageBand title="Compare scenarios" />
       <div className="page space-y-6 pb-16 pt-8">
+        <ScenarioACard />
         <ScenarioBEditor label={bLabel} raw={bRaw} evaluation={bEval} onChange={props.onBRawChange} onPreset={props.onBPreset} />
 
         {b ? (
@@ -134,6 +136,44 @@ const FIELDS: { key: FieldKey; label: string; dot?: 'my' | 'us' }[] = [
   { key: 'myInflation', label: 'Malaysia inflation', dot: 'my' },
   { key: 'usInflation', label: 'US inflation', dot: 'us' },
 ];
+
+/** Scenario A: the locked baseline preset, read-only, on Scenario B's card spacing and grid. */
+function ScenarioACard() {
+  const { name, inputs } = PRESETS.A;
+  const items: { label: string; value: string; dot?: 'my' | 'us'; aside?: string }[] = [
+    { label: 'Malaysia inflation', value: formatInputPct(inputs.myInflationPct), dot: 'my' },
+    { label: 'US inflation', value: formatInputPct(inputs.usInflationPct), dot: 'us' },
+    { label: 'Real interest rate', value: formatInputPct(inputs.realRatePct) },
+    { label: "Today's rate", value: `US$1 = RM ${formatSpot(inputs.spotMyrPerUsd)}`, aside: 'hypothetical' },
+  ];
+
+  return (
+    <section className="card p-6" aria-labelledby="a-card-heading" data-testid="scenario-a">
+      <h2 id="a-card-heading" className="flex min-w-0 items-center gap-2 text-lg font-bold text-ink">
+        <span className="shrink-0">Scenario A</span>
+        <span className="tag min-w-0">
+          <LockIcon className="h-3.5 w-3.5 shrink-0" />
+          {name}
+          <span className="sr-only">(locked)</span>
+        </span>
+      </h2>
+      <dl className="mt-4 grid gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
+        {items.map((item) => (
+          <div key={item.label}>
+            <dt className="flex flex-wrap items-center gap-2 text-base font-semibold text-ink">
+              {item.dot && (
+                <span className={`h-3 w-3 shrink-0 rounded-full ${item.dot === 'my' ? 'bg-my' : 'bg-us'}`} aria-hidden="true" />
+              )}
+              {item.label}
+              {item.aside && <span className="tag">{item.aside}</span>}
+            </dt>
+            <dd className="tabular mt-1 text-lg font-semibold text-ink-2">{item.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  );
+}
 
 /** Compact Scenario B editor: the same preset chips, plus small number fields on demand. */
 function ScenarioBEditor({
