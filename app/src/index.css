@@ -88,10 +88,6 @@
     /* Keep the scrollbar's space when a drawer locks page scrolling, so nothing shifts sideways. */
     scrollbar-gutter: stable;
   }
-  /* Presentation mode: every rem-based size scales up for screen recording. */
-  html.presentation {
-    font-size: 118.75%;
-  }
   body {
     margin: 0;
     font-family: var(--font-sans);

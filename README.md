@@ -41,8 +41,7 @@ derivations, limitations, glossary and references).
 | **Quiz** (`#/quiz`) | Five questions, one per screen, big answer buttons and a progress bar; feedback (one sentence + "See why →" + optional calculation) appears only after answering; score and a small celebration at the end. |
 | **Learn More** (`#/learn`) | 12 topics in three rows — *Basics*: Reading exchange rates, Nominal vs real (Fisher), Exact vs approximate, Glossary · *The theories*: PPP (shopping-basket visual), Covered IRP (step-by-step two-route no-arbitrage), International Fisher Effect, Why the forward equals PPP here (animated cancellation) · *Going deeper*: When PPP and the forward disagree (advanced lab, 4.3786 vs 4.3359), Six example scenarios, What this model can't tell you, References and About. Each topic: short intro → interactive visual → "With your current numbers" (live KaTeX trace from the simulator) → the v1 long-form text → ≤ 3 key assumptions → Previous / Next. |
 
-A **Presentation mode** icon (top right) enlarges all text and numbers for a screen recording. The mandatory notice
-is a slim strip under the navigation on every screen and topic page, and it is included in every export. All routes
+The mandatory notice is a slim strip under the navigation on every screen and topic page, and it is included in every export. All routes
 are hash links (`#/learn/ppp`, …), so the browser Back button works and pages can be linked directly.
 
 ### Interactive visuals (hand-written SVG, no chart library)

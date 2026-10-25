@@ -5,7 +5,7 @@ import { inputsToRaw, type RawInputs } from './lib/validation';
 import { BASELINE, PRESETS, type PresetId } from './lib/scenarios';
 import { comparisonCsv, comparisonSummaryText, scenarioSummaryText, type NamedScenario } from './lib/exportSummary';
 import { FOOTER_NOTE } from './lib/interpretation';
-import { CLO3, GROUP_LABEL } from './content/about';
+import { GROUP_LABEL } from './content/about';
 import { LESSON_STEPS } from './content/lesson';
 import { AppHeader, DisclaimerStrip } from './components/AppHeader';
 import { GuidedLesson, type Prediction } from './components/GuidedLesson';
@@ -17,9 +17,8 @@ import { CompareView, type CompareTab } from './views/CompareView';
 import { QuizView } from './views/QuizView';
 import { LearnView } from './views/LearnView';
 import { parseHash, sameRoute, toHash, type Route } from './routes';
-import { copyText, downloadText, readStorage, writeStorage } from './utils/browser';
+import { copyText, downloadText } from './utils/browser';
 
-const PRESENTATION_KEY = 'paritylab.presentation';
 const SCENARIO_A: NamedScenario = { label: PRESETS.A.name, inputs: BASELINE, results: calculate(BASELINE) };
 
 type Lesson = { step: number; prediction: Prediction | null };
@@ -30,7 +29,6 @@ export default function App() {
   const [cmpRaw, setCmpRaw] = useState<RawInputs>(() => inputsToRaw(PRESETS.B.inputs));
   const [cmpLabel, setCmpLabel] = useState<string>(PRESETS.B.name);
   const [cmpTab, setCmpTab] = useState<CompareTab>('curve');
-  const [presentation, setPresentation] = useState<boolean>(() => readStorage(PRESENTATION_KEY) === '1');
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [quiz, setQuiz] = useState<QuizState>({ index: 0, answers: {} });
   // Copy/download feedback is a fixed-position toast, so no control ever moves to make room for it.
@@ -66,11 +64,6 @@ export default function App() {
     window.scrollTo(0, 0);
     document.querySelector<HTMLElement>('.view-heading')?.focus({ preventScroll: true });
   }, [routeKey]);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('presentation', presentation);
-    writeStorage(PRESENTATION_KEY, presentation ? '1' : '0');
-  }, [presentation]);
 
   const lessonStep = lesson && route.view === 'simulator' ? lesson.step : null;
   const lessonPrediction = lesson?.prediction ?? null;
@@ -147,7 +140,7 @@ export default function App() {
         >
           Skip to main content
         </a>
-        <AppHeader route={route} presentation={presentation} onTogglePresentation={() => setPresentation((p) => !p)} />
+        <AppHeader route={route} />
         <DisclaimerStrip />
 
         <main id="main" tabIndex={-1} className={`flex-1 outline-none ${lessonActive ? 'pb-[60vh]' : ''}`}>
@@ -191,9 +184,7 @@ export default function App() {
         <footer className="no-print border-t border-line bg-surface">
           <div className="page flex flex-wrap justify-between gap-x-6 gap-y-2 py-6 text-sm text-ink-2">
             <p>{FOOTER_NOTE} Runs entirely in your browser; no data leaves this page.</p>
-            <p>
-              ParityLab · GFB3043 / GEB3043 · CLO3: {CLO3} · {GROUP_LABEL}
-            </p>
+            <p>ParityLab · GFB3043 / GEB3043 · {GROUP_LABEL}</p>
           </div>
         </footer>
 

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { Route, View } from '../routes';
 import { DISCLAIMER } from '../lib/interpretation';
-import { InfoIcon, PresentIcon } from './Icons';
+import { InfoIcon } from './Icons';
 import { RouteLink } from './RouteLink';
 
 const NAV: { view: View; label: string }[] = [
@@ -14,17 +14,15 @@ const NAV: { view: View; label: string }[] = [
 
 type Props = {
   route: Route;
-  presentation: boolean;
-  onTogglePresentation: () => void;
 };
 
 /**
- * Header: a three-column grid above 768 px (logo · centred nav · Presentation
- * button), so the nav sits at the true centre of the header. At 768 px and
- * below: logo and button on row 1, the centred nav on row 2. Nav labels never
+ * Header: a three-column grid above 768 px (logo · centred nav · empty column
+ * that balances the logo), so the nav sits at the true centre of the header. At
+ * 768 px and below: logo on row 1, the centred nav on row 2. Nav labels never
  * wrap; if the row is too narrow it scrolls sideways with the active tab in view.
  */
-export function AppHeader({ route, presentation, onTogglePresentation }: Props) {
+export function AppHeader({ route }: Props) {
   const listRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
@@ -36,7 +34,7 @@ export function AppHeader({ route, presentation, onTogglePresentation }: Props) 
 
   return (
     <header className="no-print on-dark bg-ink text-on-panel">
-      <div className="page grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1 py-2 min-[769px]:grid-cols-[1fr_auto_1fr] min-[769px]:py-3">
+      <div className="page grid grid-cols-1 items-center gap-x-4 gap-y-1 py-2 min-[769px]:grid-cols-[1fr_auto_1fr] min-[769px]:py-3">
         <RouteLink
           to={{ view: 'home' }}
           className="flex items-center gap-2 justify-self-start rounded-lg text-lg font-bold no-underline"
@@ -56,7 +54,7 @@ export function AppHeader({ route, presentation, onTogglePresentation }: Props) 
         </RouteLink>
         <nav
           aria-label="Main"
-          className="col-span-2 row-start-2 min-w-0 min-[769px]:col-span-1 min-[769px]:col-start-2 min-[769px]:row-start-1"
+          className="row-start-2 min-w-0 min-[769px]:col-start-2 min-[769px]:row-start-1"
         >
           <ul
             ref={listRef}
@@ -78,17 +76,6 @@ export function AppHeader({ route, presentation, onTogglePresentation }: Props) 
             })}
           </ul>
         </nav>
-        <button
-          type="button"
-          // Pixel-sized so it keeps one size when presentation mode scales the rem-based text.
-          className={`btn btn-dark col-start-2 row-start-1 h-[40px] min-h-[40px] w-[40px] justify-self-end p-0 min-[769px]:col-start-3 ${presentation ? 'bg-accent text-on-accent hover:bg-accent-strong' : ''}`}
-          aria-pressed={presentation}
-          aria-label="Presentation mode"
-          title="Presentation mode: larger text and numbers for screen recording"
-          onClick={onTogglePresentation}
-        >
-          <PresentIcon className="h-[20px] w-[20px]" />
-        </button>
       </div>
     </header>
   );

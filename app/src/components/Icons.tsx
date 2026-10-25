@@ -136,15 +136,6 @@ export function PlayIcon(p: IconProps) {
   );
 }
 
-export function PresentIcon(p: IconProps) {
-  return (
-    <Svg {...p}>
-      <rect x="3" y="4" width="18" height="12" rx="2" />
-      <path d="M12 16v4M8 20h8" />
-    </Svg>
-  );
-}
-
 export function ResetIcon(p: IconProps) {
   return (
     <Svg {...p}>
