@@ -70,13 +70,10 @@ export function Drawer({ open, title, onClose, children, footer }: Props) {
         aria-labelledby={titleId}
         className="drawer-panel relative flex max-h-[88vh] w-full flex-col overflow-hidden rounded-t-2xl bg-surface shadow-2xl md:max-h-none md:w-[36rem] md:rounded-none md:rounded-l-2xl"
       >
-        <div className="flex items-start justify-between gap-4 border-b border-line px-6 py-4">
-          <div>
-            <p className="eyebrow">Show the math</p>
-            <h2 id={titleId} className="text-xl font-bold text-ink">
-              {title}
-            </h2>
-          </div>
+        <div className="flex items-center justify-between gap-4 border-b border-line px-6 py-4">
+          <h2 id={titleId} className="text-xl font-bold text-ink">
+            {title}
+          </h2>
           <button type="button" className="btn btn-icon" onClick={onClose} aria-label="Close" data-autofocus>
             <CrossIcon className="h-5 w-5" />
           </button>

@@ -48,7 +48,7 @@ export function Heatmap({ spot, current, onPick }: Props) {
   const liveId = useId();
 
   const m = { top: 8, right: 8, bottom: 48, left: 56 };
-  const side = Math.max(200, Math.min(520, width - m.left - m.right));
+  const side = Math.max(200, Math.min(576, width - m.left - m.right));
   const cell = side / N;
   const height = m.top + side + m.bottom;
   const px = (pct: number) => m.left + ((pct - HEAT_MIN) / HEAT_STEP + 0.5) * cell;
@@ -76,8 +76,8 @@ export function Heatmap({ spot, current, onPick }: Props) {
 
   return (
     <figure className="m-0">
-      <div className="flex flex-wrap items-start gap-8">
-        <div ref={ref} className="w-full min-w-0 max-w-[36rem]">
+      <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div ref={ref} className="mx-auto w-full min-w-0 max-w-[40rem]">
           <div
             role="group"
             tabIndex={0}
@@ -133,36 +133,8 @@ export function Heatmap({ spot, current, onPick }: Props) {
                 fill="var(--color-ink)"
                 transform={`rotate(-45 ${m.left + side * 0.62} ${m.top + side * 0.38 - 8})`}
                 textAnchor="middle"
-                paintOrder="stroke"
-                stroke="var(--color-surface)"
-                strokeWidth={4}
               >
                 no change
-              </text>
-              <text
-                x={m.left + 10}
-                y={m.top + 22}
-                fontSize={14}
-                fontWeight={800}
-                fill="var(--color-ink)"
-                paintOrder="stroke"
-                stroke="var(--color-surface)"
-                strokeWidth={4}
-              >
-                ↓ Ringgit stronger
-              </text>
-              <text
-                x={m.left + side - 10}
-                y={m.top + side - 12}
-                textAnchor="end"
-                fontSize={14}
-                fontWeight={800}
-                fill="var(--color-ink)"
-                paintOrder="stroke"
-                stroke="var(--color-surface)"
-                strokeWidth={4}
-              >
-                ↑ Ringgit weaker
               </text>
               {/* Scenario B marker */}
               <circle
@@ -211,7 +183,7 @@ export function Heatmap({ spot, current, onPick }: Props) {
                 fontWeight={700}
                 fill="var(--color-ink)"
               >
-                Malaysia inflation (π_MY) →
+                Malaysia inflation →
               </text>
               <text
                 transform={`translate(14 ${m.top + side / 2}) rotate(-90)`}
@@ -220,12 +192,12 @@ export function Heatmap({ spot, current, onPick }: Props) {
                 fontWeight={700}
                 fill="var(--color-ink)"
               >
-                US inflation (π_US) →
+                US inflation →
               </text>
             </svg>
           </div>
         </div>
-        <div className="w-full max-w-xs space-y-4">
+        <div className="w-full space-y-4 lg:pt-2">
           <p id={liveId} aria-live="polite" className="h-32 overflow-hidden rounded-xl bg-surface-2 p-4 text-sm text-ink">
             {active
               ? describe(focus)
@@ -241,9 +213,8 @@ export function Heatmap({ spot, current, onPick }: Props) {
               aria-hidden="true"
             />
             <div className="mt-1 flex justify-between text-xs text-ink-2">
-              <span>↓ Ringgit stronger</span>
-              <span>No change</span>
-              <span>Ringgit weaker ↑</span>
+              <span>MYR/USD ↓, ringgit stronger</span>
+              <span>ringgit weaker, MYR/USD ↑</span>
             </div>
             <p className="mt-2 text-xs text-ink-3">Colour saturates beyond ±12%. The ringed cell is Scenario B.</p>
           </div>
@@ -265,7 +236,7 @@ export function Heatmap({ spot, current, onPick }: Props) {
             <caption className="sr-only">PPP change in MYR/USD (%), every 5 pp</caption>
             <thead>
               <tr>
-                <th scope="col">π_US \ π_MY</th>
+                <th scope="col">US inflation \ Malaysia inflation</th>
                 {[-5, 0, 5, 10, 15].map((t) => (
                   <th key={t} scope="col" className="num">
                     {formatInputPct(t)}

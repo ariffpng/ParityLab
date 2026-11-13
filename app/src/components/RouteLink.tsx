@@ -1,3 +1,4 @@
+import { ArrowRightIcon } from './Icons';
 import type { MouseEvent, ReactNode } from 'react';
 import { toHash, type Route } from '../routes';
 import { useNav } from './nav';
@@ -44,7 +45,8 @@ export function LearnMoreLink({
   return (
     <RouteLink to={to} className={`link-more ${className}`}>
       {label}
-      {about && <span className="sr-only"> about {about}</span>} <span aria-hidden="true">→</span>
+      {about && <span className="sr-only"> about {about}</span>}
+      <ArrowRightIcon className="h-4 w-4 shrink-0" />
     </RouteLink>
   );
 }

@@ -217,7 +217,7 @@ export function oneLineSummary(r: Results): string {
 }
 
 /** Short Scenario B-style caveat (≤ 12 words); the full text is SCENARIO_B_CAVEAT. */
-export const SPIKE_CALLOUT = 'Real markets may react differently: Fed tightening could lift the USD.';
+export const SPIKE_CALLOUT = 'Real markets may react differently: US interest-rate rises could lift the USD.';
 
 /** Show the short caveat when US expected inflation exceeds Malaysia's by 1 pp or more. */
 export function shouldShowSpikeCallout(x: Inputs): boolean {

@@ -64,19 +64,22 @@ describe('Simulator — baseline and presets (QA checklist)', () => {
     // Visible values are spans/strong; the duplicate cells belong to the screen-reader data tables.
     expect(within(screen.getByTestId('flow-diagram')).getByText('−0.5075 pp', { selector: 'span' })).toBeInTheDocument();
     const hero = card('card-ppp');
-    expect(within(hero).getByText('−0.4854%', { selector: 'strong' })).toBeInTheDocument();
-    expect(within(hero).getByText('+0.4878%', { selector: 'span' })).toBeInTheDocument();
+    // Each percentage carries its own words; the badge's arrow is labelled as the MYR/USD move.
+    const detail = within(hero).getByTestId('direction-detail');
+    expect(detail).toHaveTextContent('MYR/USD falls 0.4854%');
+    expect(detail).toHaveTextContent('RM 1 buys 0.4878% more US dollars');
+    expect(hero.querySelector('[data-direction]')).toHaveTextContent(/^MYR\/USD falls:\s*Ringgit stronger/);
     expect(hero).toHaveTextContent('In one year: US$1 = RM 4.3786');
     expect(hero.querySelector('[data-direction]')).toHaveAttribute('data-direction', 'appreciates');
     expect(hero.querySelector('[data-direction]')).toHaveTextContent(/Ringgit stronger/);
     expect(screen.getByTestId('parity-sign')).toHaveAttribute('data-equal', 'true');
-    expect(screen.getByTestId('parity-chip')).toHaveTextContent('PPP rate here · why?');
+    expect(screen.getByTestId('parity-chip')).toHaveTextContent('Same as PPP: why?');
     expect(screen.getByText('US inflation is higher, so the model expects a stronger ringgit.')).toBeInTheDocument();
     expect(screen.queryByText(SPIKE_CALLOUT)).toBeNull();
     expect(screen.getByRole('button', { name: /Baseline/ })).toHaveAttribute('aria-pressed', 'true');
   });
 
-  it('the "US inflation spike" chip loads Scenario B: 6.5750%, 4.2952 MYR/USD, −2.3810%, +2.4390% and the callout', async () => {
+  it('the "US inflation spike" chip loads Scenario B: 6.5750%, 4.2952 MYR/USD, MYR/USD falls 2.3810%, RM 1 buys 2.4390% more and the callout', async () => {
     const user = userEvent.setup();
     renderAt('simulator');
     await user.click(screen.getByRole('button', { name: /US inflation spike/ }));
@@ -85,26 +88,27 @@ describe('Simulator — baseline and presets (QA checklist)', () => {
     expect(within(card('card-fisher-us')).getByText('6.5750%')).toBeInTheDocument();
     expect(screen.getByTestId('ppp-value')).toHaveTextContent(/^4\.2952$/);
     expect(screen.getByTestId('cip-value')).toHaveTextContent(/^4\.2952$/);
-    expect(within(card('card-ppp')).getByText('−2.3810%', { selector: 'strong' })).toBeInTheDocument();
-    expect(within(card('card-ppp')).getByText('+2.4390%', { selector: 'span' })).toBeInTheDocument();
+    const detail = within(card('card-ppp')).getByTestId('direction-detail');
+    expect(detail).toHaveTextContent('MYR/USD falls 2.3810%');
+    expect(detail).toHaveTextContent('RM 1 buys 2.4390% more US dollars');
     expect(screen.getByText(SPIKE_CALLOUT)).toBeInTheDocument();
   });
 
   it('chips load cases C–F (D: ringgit weaker, see-saw RM side down; C: level)', async () => {
     const user = userEvent.setup();
     renderAt('simulator');
-    await user.click(screen.getByRole('button', { name: /MY higher/ }));
+    await user.click(screen.getByRole('button', { name: /Malaysia higher/ }));
     expect(screen.getByLabelText('Malaysia inflation')).toHaveValue('5');
     expect(screen.getByLabelText('US inflation')).toHaveValue('2.5');
     expect(screen.getByTestId('ppp-value')).toHaveTextContent(/^4\.5073$/);
     expect(card('card-ppp').querySelector('[data-direction]')).toHaveTextContent(/Ringgit weaker/);
     expect(screen.getByTestId('seesaw')).toHaveAttribute('data-rm-side', 'down');
-    await user.click(screen.getByRole('button', { name: /^Equal$/ }));
+    await user.click(screen.getByRole('button', { name: /^Equal inflation$/ }));
     expect(screen.getByTestId('ppp-value')).toHaveTextContent(/^4\.4000$/);
     expect(screen.getByTestId('seesaw')).toHaveAttribute('data-rm-side', 'level');
-    await user.click(screen.getByRole('button', { name: /Extreme MY/ }));
+    await user.click(screen.getByRole('button', { name: /Malaysia much higher/ }));
     expect(screen.getByTestId('ppp-value')).toHaveTextContent(/^4\.7050$/);
-    await user.click(screen.getByRole('button', { name: /Extreme US/ }));
+    await user.click(screen.getByRole('button', { name: /US much higher/ }));
     expect(screen.getByTestId('ppp-value')).toHaveTextContent(/^4\.1148$/);
   });
 
@@ -114,10 +118,10 @@ describe('Simulator — baseline and presets (QA checklist)', () => {
     const seesaw = () => screen.getByTestId('seesaw');
     expect(seesaw()).toHaveAttribute('data-rm-side', 'up');
     expect(Number(seesaw().getAttribute('data-angle'))).toBeGreaterThan(0);
-    await user.click(screen.getByRole('button', { name: /Extreme MY/ }));
+    await user.click(screen.getByRole('button', { name: /Malaysia much higher/ }));
     expect(seesaw()).toHaveAttribute('data-rm-side', 'down');
     expect(Number(seesaw().getAttribute('data-angle'))).toBe(-15);
-    await user.click(screen.getByRole('button', { name: /^Equal$/ }));
+    await user.click(screen.getByRole('button', { name: /^Equal inflation$/ }));
     expect(Number(seesaw().getAttribute('data-angle'))).toBe(0);
   });
 
@@ -134,7 +138,7 @@ describe('Simulator — baseline and presets (QA checklist)', () => {
     expect(sign).toHaveAttribute('data-equal', 'false');
     expect(sign).toHaveTextContent('does not equal');
     expect(sign).toHaveTextContent('0.0427');
-    expect(screen.getByTestId('parity-chip')).toHaveTextContent('differs by 0.0427 · why?');
+    expect(screen.getByTestId('parity-chip')).toHaveTextContent('Differs by 0.0427: why?');
     await user.click(within(card('card-cip')).getByRole('button', { name: /Show the math/ }));
     const dialog = screen.getByRole('dialog', { name: 'Forward rate (theoretical)' });
     expect(
@@ -258,17 +262,16 @@ describe('Learn more links on every main card', () => {
     renderAt('simulator');
     const links: [HTMLElement, RegExp, string][] = [
       [card('card-ppp'), /Learn more about Purchasing Power Parity/, '#/learn/ppp'],
-      [card('flow-card'), /Learn more about why the forward equals PPP/, '#/learn/forward-equals-ppp'],
-      [card('card-fisher-my'), /Learn more about the Fisher Effect/, '#/learn/fisher'],
-      [card('card-fisher-us'), /Learn more about the Fisher Effect/, '#/learn/fisher'],
-      [card('card-cip'), /Learn more about Covered Interest Rate Parity/, '#/learn/covered-irp'],
       [card('card-cip'), /Equals the PPP rate here — why\?/, '#/learn/forward-equals-ppp'],
       [screen.getByTestId('summary'), /see what it can't tell you/, '#/learn/limitations'],
     ];
     for (const [scope, name, href] of links) {
       expect(within(scope).getByRole('link', { name })).toHaveAttribute('href', href);
     }
-    await user.click(within(card('card-cip')).getByRole('link', { name: /Learn more about Covered Interest Rate Parity/ }));
+    // The metric cards keep one action; their topic link lives in the "Show the math" drawer's footer.
+    expect(within(card('card-cip')).queryByRole('link', { name: /Learn more/ })).toBeNull();
+    await user.click(within(card('card-cip')).getByRole('button', { name: /Show the math/ }));
+    await user.click(within(screen.getByRole('dialog')).getByRole('link', { name: /Learn more/ }));
     expect(window.location.hash).toBe('#/learn/covered-irp');
     expect(within(mainNav()).getByRole('link', { name: 'Learn More' })).toHaveAttribute('aria-current', 'page');
   });
@@ -319,7 +322,7 @@ describe('Compare screen', () => {
   it('Send to Compare carries the simulator inputs into Scenario B', async () => {
     const user = userEvent.setup();
     renderAt('simulator');
-    await user.click(screen.getByRole('button', { name: /Extreme MY/ }));
+    await user.click(screen.getByRole('button', { name: /Malaysia much higher/ }));
     await user.click(screen.getByRole('button', { name: /Send to Compare/ }));
     expect(screen.getByRole('heading', { level: 1, name: 'Compare scenarios' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /Scenario B/ })).toHaveTextContent('From the simulator');
@@ -341,7 +344,7 @@ describe('Compare screen', () => {
     expect(within(full).getAllByText('4.2952 MYR/USD')).toHaveLength(3);
     expect(within(full).getAllByText('−0.0834 MYR/USD')).toHaveLength(3);
     expect(within(full).getByText('+2.0300 pp')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Copy scenario summary' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Copy summary' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Download CSV' })).toBeInTheDocument();
   });
 
@@ -402,7 +405,7 @@ describe('Compare screen', () => {
     expect(within(a).queryByRole('textbox')).toBeNull();
     const b = screen.getByRole('heading', { name: /Scenario B/ }).closest('section')!;
     expect(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    await user.click(screen.getByRole('button', { name: /Extreme MY/ }));
+    await user.click(screen.getByRole('button', { name: /Malaysia much higher/ }));
     expect(text()).toEqual(['2.50%', '3.00%', '1.50%', 'US$1 = RM 4.4000']);
   });
 
@@ -420,19 +423,23 @@ describe('Compare screen', () => {
 });
 
 describe('Quiz', () => {
-  it('gives feedback only after answering, links to the topic, then scores with a celebration', async () => {
+  it('gives feedback only after answering, links to the topic, then reviews every answer without a celebration', async () => {
     const user = userEvent.setup();
     renderAt('quiz');
     expect(screen.getByText('Question 1 of 5')).toBeInTheDocument();
     expect(screen.queryByTestId('quiz-feedback')).toBeNull();
     expect(screen.queryByText(/Not quite/)).toBeNull();
-    await user.click(screen.getByRole('button', { name: /It rises — the ringgit depreciates/ }));
+    await user.click(screen.getByRole('button', { name: /It rises: the ringgit depreciates/ }));
     const feedback = screen.getByTestId('quiz-feedback');
-    expect(feedback).toHaveTextContent('Not quite. The answer is: It falls — the ringgit appreciates.');
-    expect(within(feedback).getByRole('link', { name: /See why/ })).toHaveAttribute('href', '#/learn/ppp');
+    expect(feedback).toHaveTextContent('Not quite. The answer is: It falls: the ringgit appreciates.');
+    expect(within(feedback).getByRole('link', { name: /Learn more about Purchasing Power Parity/ })).toHaveAttribute('href', '#/learn/ppp');
     await user.click(within(feedback).getByRole('button', { name: 'Show calculation' }));
-    expect(within(feedback).getByText(/π_US raised to 5\.00%: 4\.4 × 1\.025\/1\.05 = 4\.2952 MYR\/USD/)).toBeInTheDocument();
-    expect(screen.getByText('Score 0 / 1')).toBeInTheDocument();
+    // The calculation line typesets π_US with a real subscript, so match the whole list item's text.
+    const calcLine = within(feedback).getByText(
+      (_, el) => el?.tagName === 'LI' && /πUS raised to 5\.00%: 4\.4 × 1\.025\/1\.05 = 4\.2952 MYR\/USD/.test(el.textContent ?? ''),
+    );
+    expect(calcLine.querySelector('sub')).toHaveTextContent('US');
+    expect(screen.getByText('Question 1 of 5')).toBeInTheDocument();
     for (const item of QUIZ.slice(1)) {
       await user.click(screen.getByRole('button', { name: /Next question/ }));
       expect(screen.queryByTestId('quiz-feedback')).toBeNull();
@@ -441,14 +448,27 @@ describe('Quiz', () => {
       expect(screen.getByTestId('quiz-feedback')).toHaveTextContent('Correct.');
     }
     await user.click(screen.getByRole('button', { name: /See your score/ }));
-    expect(screen.getByTestId('quiz-done')).toHaveTextContent('Final score: 4 / 5');
-    await user.click(screen.getByRole('button', { name: /Try again/ }));
+    const done = screen.getByTestId('quiz-done');
+    expect(done).toHaveTextContent('You scored 4 out of 5');
+    // No celebration tropes; instead every question is reviewed, with the miss linked to its topic.
+    expect(done.querySelector('.confetti')).toBeNull();
+    const review = within(done).getByRole('list', { name: 'Your answers' });
+    expect(within(review).getAllByRole('listitem')).toHaveLength(5);
+    expect(review).toHaveTextContent('Correct answer: It falls: the ringgit appreciates');
+    expect(within(review).getByRole('link', { name: /Learn more about Purchasing Power Parity/ })).toHaveAttribute('href', '#/learn/ppp');
+    // Retry only the missed question, then return to the score.
+    await user.click(within(done).getByRole('button', { name: /Retry missed questions/ }));
+    expect(screen.getByText('Question 1 of 5')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /It falls: the ringgit appreciates/ }));
+    await user.click(screen.getByRole('button', { name: /See your score/ }));
+    expect(screen.getByTestId('quiz-done')).toHaveTextContent('You scored 5 out of 5');
+    await user.click(screen.getByRole('button', { name: /Start again/ }));
     expect(screen.getByText('Question 1 of 5')).toBeInTheDocument();
   });
 });
 
 describe('Learn More', () => {
-  it('the hub lists 12 topics in three rows, each with a reading time', () => {
+  it('the hub lists 12 topics as a numbered reading path in three groups, starting with Reading exchange rates', () => {
     renderAt('learn');
     for (const name of ['Basics', 'The theories', 'Going deeper']) {
       expect(screen.getByRole('heading', { level: 2, name })).toBeInTheDocument();
@@ -456,8 +476,9 @@ describe('Learn More', () => {
     for (const t of TOPICS) {
       const link = screen.getByRole('link', { name: new RegExp(t.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')) });
       expect(link).toHaveAttribute('href', `#/learn/${t.id}`);
-      expect(link).toHaveTextContent(/\d+ min read/);
+      expect(link).not.toHaveTextContent(/min read/);
     }
+    expect(screen.getByRole('link', { name: /Reading exchange rates/ })).toHaveTextContent('Start here');
   });
 
   it('every topic page uses the template and keeps the disclaimer', () => {
@@ -479,8 +500,8 @@ describe('Learn More', () => {
   it('a card link from the Simulator lands on the topic, and Back returns', async () => {
     const user = userEvent.setup();
     renderAt('simulator');
-    await user.click(within(card('card-cip')).getByRole('link', { name: /Learn more about Covered Interest Rate Parity/ }));
-    expect(screen.getByRole('heading', { level: 1, name: 'Covered Interest Rate Parity' })).toBeInTheDocument();
+    await user.click(within(card('card-ppp')).getByRole('link', { name: /Learn more about Purchasing Power Parity/ }));
+    expect(screen.getByRole('heading', { level: 1, name: 'Purchasing Power Parity' })).toBeInTheDocument();
     window.history.back();
     await waitFor(() => expect(screen.getByTestId('ppp-value')).toBeInTheDocument());
   });
@@ -610,7 +631,7 @@ describe('Layout stability (structure checks in jsdom)', () => {
     const row = screen.getByRole('group', { name: 'Scenario B presets' });
     for (const c of within(row).getAllByRole('button')) expect(c.querySelector('svg')).toBeNull();
     expect(row.parentElement).not.toHaveTextContent('Scenario B');
-    await user.click(within(row).getByRole('button', { name: /Extreme MY/ }));
+    await user.click(within(row).getByRole('button', { name: /Malaysia much higher/ }));
     expect(screen.getByRole('heading', { name: /Scenario B/ })).toHaveTextContent('Extreme Malaysian divergence');
   });
 
@@ -639,7 +660,7 @@ describe('Layout stability (structure checks in jsdom)', () => {
     expect(more).toHaveAccessibleName('More options');
     unmount();
     renderAt('quiz');
-    await user.click(screen.getByRole('button', { name: /It falls — the ringgit appreciates/ }));
+    await user.click(screen.getByRole('button', { name: /It falls: the ringgit appreciates/ }));
     const calc = screen.getByRole('button', { name: 'Show calculation' });
     await user.click(calc);
     expect(calc).toHaveAccessibleName('Show calculation');
@@ -679,5 +700,38 @@ describe('Layout stability (structure checks in jsdom)', () => {
     const mine = screen.getByLabelText('Malaysia real rate');
     // DOCUMENT_POSITION_FOLLOWING: the country field comes after the switch.
     expect(sw.compareDocumentPosition(mine) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+});
+
+describe('Direction clarity and screen-reader announcements', () => {
+  it('announces the settled result politely, and hides numbers at once when an input is invalid', async () => {
+    const user = userEvent.setup();
+    renderAt('simulator');
+    const live = screen.getByTestId('result-announcer');
+    expect(live).toHaveAttribute('aria-live', 'polite');
+    expect(live).toHaveTextContent('PPP future rate 4.3786 MYR/USD. Ringgit stronger: MYR/USD falls 0.4854%');
+    await user.click(screen.getByRole('button', { name: /US inflation spike/ }));
+    await waitFor(() => expect(live).toHaveTextContent('PPP future rate 4.2952 MYR/USD'), { timeout: 2000 });
+    const input = screen.getByLabelText('Malaysia inflation');
+    await user.clear(input);
+    await user.type(input, 'abc');
+    expect(live).toHaveTextContent('Results hidden until the highlighted inputs are fixed.');
+    expect(live).not.toHaveTextContent(/\d\.\d{4}/);
+  });
+
+  it('Compare says in words which way B moved the ringgit relative to A', () => {
+    renderAt('compare');
+    expect(screen.getByTestId('relative-direction')).toHaveTextContent('MYR/USD ↓, stronger in B');
+    expect(screen.getByRole('rowheader', { name: 'Malaysia nominal rate (Fisher)' })).toBeInTheDocument();
+  });
+
+  it('the invalid-state card offers a reset that restores the baseline', async () => {
+    const user = userEvent.setup();
+    renderAt('simulator');
+    const input = screen.getByLabelText('Malaysia inflation');
+    await user.clear(input);
+    await user.type(input, 'abc');
+    await user.click(within(screen.getByTestId('results-hidden')).getByRole('button', { name: /Reset to baseline/ }));
+    expect(screen.getByTestId('ppp-value')).toHaveTextContent(/^4\.3786$/);
   });
 });

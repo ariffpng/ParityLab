@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { LESSON_REVEAL, LESSON_STEPS } from '../lesson';
-import { TOPICS, TOPIC_GROUPS, neighbours, readingMinutes } from '../topics';
+import { TOPICS, TOPIC_GROUPS, neighbours } from '../topics';
 import { QUIZ } from '../quiz';
 
 const words = (t: string) => t.split(/\s+/).filter(Boolean).length;
@@ -28,7 +28,6 @@ describe('Learn More topics', () => {
       expect(t.intro.length).toBeGreaterThanOrEqual(1);
       expect(t.intro.length).toBeLessThanOrEqual(2);
       expect(t.assumptions.length).toBeLessThanOrEqual(3);
-      expect(readingMinutes(t)).toBeGreaterThanOrEqual(1);
     }
   });
 

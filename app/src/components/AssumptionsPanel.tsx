@@ -57,7 +57,7 @@ export function AssumptionsPanel({
   // When the guided lesson points at an input, the collapsed phone sheet is ringed
   // instead of being opened, so nothing below it jumps.
   const lessonPointsHere = highlight.some((h) => h.startsWith('sim-field-'));
-  const summary = `MY ${raw.myInflation}% · US ${raw.usInflation}% · ${raw.advanced ? `r ${raw.myRealRate}/${raw.usRealRate}%` : `r ${raw.realRate}%`} · RM ${raw.spot}`;
+  const summary = `Inflation MY ${raw.myInflation}%, US ${raw.usInflation}%; real ${raw.advanced ? `${raw.myRealRate}/${raw.usRealRate}%` : `${raw.realRate}%`}; US$1 = RM ${raw.spot}`;
 
   const toggleAdvanced = () => {
     if (!raw.advanced) set({ advanced: true, myRealRate: raw.realRate, usRealRate: raw.realRate });
@@ -67,7 +67,7 @@ export function AssumptionsPanel({
   return (
     <section
       aria-labelledby="assumptions-heading"
-      className={`on-dark max-md:sticky max-md:top-0 max-md:z-20 rounded-2xl bg-panel text-on-panel shadow-lg max-md:-mx-4 max-md:rounded-none ${lessonPointsHere && !sheetOpen ? 'lesson-ring-mobile' : ''}`}
+      className={`on-dark max-md:sticky max-md:top-0 max-md:z-20 rounded-2xl bg-panel text-on-panel max-md:-mx-4 max-md:shadow-lg max-md:rounded-none ${lessonPointsHere && !sheetOpen ? 'lesson-ring-mobile' : ''}`}
     >
       <div className="flex items-center gap-2 px-6 pb-2 pt-4 max-md:px-4 max-md:py-2">
         <h2 id="assumptions-heading" className="text-lg font-bold">
@@ -180,19 +180,9 @@ export function AssumptionsPanel({
             <PresetChips active={activePreset} onPick={onPreset} dark />
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 border-t border-panel-line pt-4">
+          <div className="border-t border-panel-line pt-4">
             <button type="button" className="btn btn-dark" onClick={onSendToCompare} disabled={!valid}>
               Send to Compare <ArrowRightIcon className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              className="btn btn-icon btn-dark"
-              onClick={onCopySummary}
-              disabled={!valid}
-              aria-label="Copy scenario summary"
-              title="Copy scenario summary"
-            >
-              <CopyIcon className="h-5 w-5" />
             </button>
           </div>
 
@@ -233,6 +223,9 @@ export function AssumptionsPanel({
               </button>
               <button type="button" className="btn btn-sm btn-dark" onClick={() => onPreset('ADV')}>
                 Load example: unequal real rates
+              </button>
+              <button type="button" className="btn btn-sm btn-dark" onClick={onCopySummary} disabled={!valid}>
+                <CopyIcon className="h-4 w-4" /> Copy scenario summary
               </button>
               {/* Country real rates: shown in advanced mode; on phones their space is always kept. */}
               <div className={`space-y-3 ${raw.advanced ? '' : 'hidden max-md:block max-md:invisible'}`} inert={!raw.advanced}>

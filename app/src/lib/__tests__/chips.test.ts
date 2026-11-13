@@ -8,10 +8,10 @@ describe('preset chips', () => {
     expect(PRESET_CHIPS.map((c) => c.label)).toEqual([
       'Baseline',
       'US inflation spike',
-      'Equal',
-      'MY higher',
-      'Extreme MY',
-      'Extreme US',
+      'Equal inflation',
+      'Malaysia higher',
+      'Malaysia much higher',
+      'US much higher',
     ]);
   });
 

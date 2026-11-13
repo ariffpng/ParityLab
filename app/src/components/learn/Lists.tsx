@@ -117,11 +117,11 @@ export function EquationList({ ids }: { ids: EquationId[] }) {
         return (
           <div key={id} className="rounded-xl border border-line bg-surface p-4">
             <p className="font-bold text-ink">{eq.name}</p>
-            <p className="mt-2 text-xs font-bold uppercase tracking-wide text-ink-3">Exact</p>
+            <p className="mt-2 text-sm font-semibold text-ink-2">Exact</p>
             <Tex display tex={eq.exact} />
             {eq.approx && (
               <>
-                <p className="text-xs font-bold uppercase tracking-wide text-ink-3">Approximation (comparison only)</p>
+                <p className="text-sm font-semibold text-ink-2">Approximation (comparison only)</p>
                 <Tex display tex={eq.approx} />
               </>
             )}
@@ -234,7 +234,7 @@ export function ParityTriangle() {
         </RouteLink>
         <span className="absolute left-[18%] top-[40%] text-sm font-semibold text-ink-2">Fisher</span>
         <span className="absolute right-[20%] top-[40%] text-sm font-semibold text-ink-2">PPP</span>
-        <span className="absolute bottom-[-0.25rem] left-1/2 -translate-x-1/2 text-sm font-semibold text-ink-2">IRP · IFE</span>
+        <span className="absolute bottom-[-0.25rem] left-1/2 -translate-x-1/2 text-sm font-semibold text-ink-2">IRP and IFE</span>
       </div>
       <figcaption className="mt-8 text-center text-ink-2">CLO3: {CLO3}</figcaption>
     </figure>

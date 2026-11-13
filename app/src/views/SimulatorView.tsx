@@ -13,7 +13,10 @@ import { MATH_META, type MathId } from '../components/mathMeta';
 import { ParityFlow, type FlowNode } from '../components/ParityFlow';
 import { FisherCard, ForwardCard, HeroResult } from '../components/ResultCards';
 import { LearnMoreLink, RouteLink } from '../components/RouteLink';
-import { AlertIcon } from '../components/Icons';
+import { AlertIcon, ArrowRightIcon, ResetIcon } from '../components/Icons';
+import { KeepHeight } from '../components/KeepHeight';
+import { ResultAnnouncer } from '../components/ResultAnnouncer';
+import { resultAnnouncement } from '../lib/directionCopy';
 
 type Props = {
   raw: RawInputs;
@@ -71,7 +74,7 @@ export function SimulatorView({
           />
         </div>
 
-        <div className="col-span-12 min-w-0 space-y-6 lg:col-span-8">
+        <KeepHeight hold={!evaluation.ok} className="col-span-12 min-w-0 space-y-6 lg:col-span-8">
           {evaluation.ok ? (
             <>
               <HeroResult r={evaluation.results} onMath={() => setMath('ppp')} highlighted={lit('card-ppp')} />
@@ -85,9 +88,9 @@ export function SimulatorView({
                   How the parity chain connects
                 </h2>
                 <ParityFlow r={evaluation.results} onOpen={(node) => setMath(NODE_MATH[node])} />
-                <div className="mt-4 flex justify-end">
-                  <LearnMoreLink to={learnRoute('forward-equals-ppp')} about="why the forward equals PPP" />
-                </div>
+                <p className="mt-4 text-sm text-ink-2">
+                  Gaps are Malaysia minus US, in pp (percentage points: 3% − 2.5% = 0.5 pp).
+                </p>
               </section>
 
               <div className="grid gap-6 md:grid-cols-3">
@@ -113,7 +116,7 @@ export function SimulatorView({
                 <p className="text-sm text-ink-2">
                   A model scenario, not a prediction —{' '}
                   <RouteLink to={learnRoute('limitations')} className="link-more">
-                    see what it can&apos;t tell you <span aria-hidden="true">→</span>
+                    see what it can&apos;t tell you <ArrowRightIcon className="h-4 w-4" />
                   </RouteLink>
                 </p>
               </div>
@@ -125,7 +128,6 @@ export function SimulatorView({
                 >
                   <AlertIcon className="h-5 w-5 shrink-0" />
                   <span className="font-semibold">{SPIKE_CALLOUT}</span>
-                  <LearnMoreLink to={learnRoute('limitations')} about="what this model can't tell you" className="ml-auto" />
                 </div>
               )}
 
@@ -144,24 +146,36 @@ export function SimulatorView({
                 <AlertIcon className="h-5 w-5" /> Results hidden
               </h2>
               <p className="mt-2 text-ink-2">ParityLab never shows numbers from invalid inputs. Fix:</p>
-              <ul className="mt-2 list-disc pl-6 text-ink">
+              <ul className="mt-3 flex flex-wrap gap-2">
                 {(Object.keys(evaluation.errors) as FieldKey[]).map((key) => (
                   <li key={key}>
-                    <a
-                      href={`#sim-field-${key}-input`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        document.getElementById(`sim-field-${key}-input`)?.focus();
+                    <button
+                      type="button"
+                      className="btn btn-sm"
+                      onClick={() => {
+                        const input = document.getElementById(`sim-field-${key}-input`);
+                        input?.scrollIntoView({ block: 'center' });
+                        input?.focus();
                       }}
                     >
                       {FIELD_NAMES[key]}
-                    </a>
+                    </button>
                   </li>
                 ))}
               </ul>
+              <button type="button" className="btn btn-primary mt-6" onClick={onReset}>
+                <ResetIcon className="h-5 w-5" /> Reset to baseline
+              </button>
             </section>
           )}
-        </div>
+          {/* Last child: it is absolutely positioned (sr-only), so it never adds spacing above a card. */}
+          <ResultAnnouncer
+            hidden={!evaluation.ok}
+            message={
+              evaluation.ok ? resultAnnouncement(evaluation.results) : 'Results hidden until the highlighted inputs are fixed.'
+            }
+          />
+        </KeepHeight>
       </div>
     </div>
   );

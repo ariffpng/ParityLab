@@ -10,10 +10,10 @@ export type Chip = { id: PresetId; label: string };
 export const PRESET_CHIPS: Chip[] = [
   { id: 'A', label: 'Baseline' },
   { id: 'B', label: 'US inflation spike' },
-  { id: 'C', label: 'Equal' },
-  { id: 'D', label: 'MY higher' },
-  { id: 'E', label: 'Extreme MY' },
-  { id: 'F', label: 'Extreme US' },
+  { id: 'C', label: 'Equal inflation' },
+  { id: 'D', label: 'Malaysia higher' },
+  { id: 'E', label: 'Malaysia much higher' },
+  { id: 'F', label: 'US much higher' },
 ];
 
 function realRates(x: Inputs): [number, number] {

@@ -88,6 +88,12 @@
     /* Keep the scrollbar's space when a drawer locks page scrolling, so nothing shifts sideways. */
     scrollbar-gutter: stable;
   }
+  /* The sticky nav + notice (from 768 px) must never cover a focused or scrolled-to element. */
+  @media (min-width: 48rem) {
+    html {
+      scroll-padding-top: 7.5rem;
+    }
+  }
   body {
     margin: 0;
     font-family: var(--font-sans);
@@ -107,6 +113,30 @@
   a {
     color: inherit;
     text-underline-offset: 3px;
+  }
+  p,
+  li,
+  dd {
+    text-wrap: pretty;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  ::selection {
+    background: var(--color-accent-soft);
+    color: var(--color-ink);
+  }
+  .on-dark ::selection {
+    background: var(--color-panel-line);
+    color: var(--color-on-panel);
+  }
+  input {
+    caret-color: var(--color-accent-strong);
+  }
+  .on-dark input {
+    caret-color: var(--color-accent);
   }
   .tabular {
     font-variant-numeric: tabular-nums;
@@ -299,19 +329,24 @@
     font-weight: 650;
     color: var(--color-ink);
     text-decoration: underline;
-    text-decoration-color: var(--color-accent);
+    /* Quiet at rest: amber is kept for the one thing to look at; the link warms up on hover/focus. */
+    text-decoration-color: var(--color-line-strong);
     text-decoration-thickness: 2px;
     text-underline-offset: 4px;
     border-radius: 6px;
+    transition: text-decoration-color 150ms ease-out;
   }
-  .link-more:hover {
-    text-decoration-color: var(--color-ink);
+  .link-more:hover,
+  .link-more:focus-visible {
+    text-decoration-color: var(--color-accent);
   }
   .on-dark .link-more {
     color: var(--color-on-panel);
+    text-decoration-color: var(--color-panel-line);
   }
-  .on-dark .link-more:hover {
-    text-decoration-color: var(--color-on-panel);
+  .on-dark .link-more:hover,
+  .on-dark .link-more:focus-visible {
+    text-decoration-color: var(--color-accent);
   }
   .btn-math {
     display: inline-flex;
@@ -331,6 +366,7 @@
     border-color: var(--color-line-strong);
   }
 
+  /* Used only by the guided lesson's step label. */
   .eyebrow {
     font-size: var(--text-sm);
     font-weight: 700;
@@ -474,7 +510,7 @@ input[type='range']::-moz-range-thumb {
   transition: transform 350ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .seesaw-settle {
-  animation: seesaw-settle 1100ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation: seesaw-settle 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 @keyframes seesaw-settle {
   from {
@@ -546,25 +582,6 @@ input[type='range']::-moz-range-thumb {
     transform: scaleX(0);
   }
 }
-.confetti {
-  position: absolute;
-  top: -10px;
-  width: 10px;
-  height: 14px;
-  border-radius: 2px;
-  animation: confetti-fall 1600ms ease-in forwards;
-}
-@keyframes confetti-fall {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(260px) rotate(540deg);
-    opacity: 0;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -572,9 +589,6 @@ input[type='range']::-moz-range-thumb {
     transition: none !important;
     animation: none !important;
     scroll-behavior: auto !important;
-  }
-  .confetti {
-    display: none;
   }
 }
 

@@ -4,7 +4,6 @@ import { calculate } from './lib/finance';
 import { inputsToRaw, type RawInputs } from './lib/validation';
 import { BASELINE, PRESETS, type PresetId } from './lib/scenarios';
 import { comparisonCsv, comparisonSummaryText, scenarioSummaryText, type NamedScenario } from './lib/exportSummary';
-import { FOOTER_NOTE } from './lib/interpretation';
 import { GROUP_LABEL } from './content/about';
 import { LESSON_STEPS } from './content/lesson';
 import { AppHeader, DisclaimerStrip } from './components/AppHeader';
@@ -140,8 +139,11 @@ export default function App() {
         >
           Skip to main content
         </a>
-        <AppHeader route={route} />
-        <DisclaimerStrip />
+        {/* From 768 px the nav and the mandatory notice stay in view while the page scrolls (demo video). */}
+        <div className="md:sticky md:top-0 md:z-30">
+          <AppHeader route={route} />
+          <DisclaimerStrip />
+        </div>
 
         <main id="main" tabIndex={-1} className={`flex-1 outline-none ${lessonActive ? 'pb-[60vh]' : ''}`}>
           {route.view === 'home' && <HomeView onStartLesson={startLesson} />}
@@ -183,7 +185,7 @@ export default function App() {
 
         <footer className="no-print border-t border-line bg-surface">
           <div className="page flex flex-wrap justify-between gap-x-6 gap-y-2 py-6 text-sm text-ink-2">
-            <p>{FOOTER_NOTE} Runs entirely in your browser; no data leaves this page.</p>
+            <p>Runs entirely in your browser; no data leaves this page.</p>
             <p>ParityLab · GFB3043 / GEB3043 · {GROUP_LABEL}</p>
           </div>
         </footer>

@@ -1,6 +1,7 @@
 import type { MyrDirection } from '../lib/finance';
 import { formatPctChange, formatSpot } from '../lib/format';
 import { directionWords } from '../lib/interpretation';
+import { directionWithQuote } from '../lib/directionCopy';
 import { paddedDomain } from '../lib/visuals';
 import { useTween } from '../hooks/useTween';
 import { SrTable } from './SrTable';
@@ -58,10 +59,10 @@ export function DumbbellChart({ lanes }: { lanes: Lane[] }) {
             MYR per USD — lower = MYR stronger
           </text>
           <text x={m.left} y={axisY + 62} fontSize={12} fill="var(--color-up-ink)" fontWeight={600}>
-            ← Ringgit stronger
+            ← Lower: ringgit stronger
           </text>
           <text x={m.left + plotW} y={axisY + 62} textAnchor="end" fontSize={12} fill="var(--color-down-ink)" fontWeight={600}>
-            Ringgit weaker →
+            Higher: ringgit weaker →
           </text>
           {lanes.map((lane, k) => (
             <LaneRow key={lane.key} lane={lane} y={TOP + k * LANE_H} x={x} />
@@ -71,9 +72,9 @@ export function DumbbellChart({ lanes }: { lanes: Lane[] }) {
       <SrTable
         caption="Today's rate and PPP future rate by scenario (MYR/USD)"
         rows={lanes.flatMap((l) => [
-          [`${l.key} · ${l.label}: today`, `${formatSpot(l.spot)} MYR/USD`],
+          [`${l.key} (${l.label}), today`, `${formatSpot(l.spot)} MYR/USD`],
           [
-            `${l.key} · ${l.label}: PPP future rate`,
+            `${l.key} (${l.label}), PPP future rate`,
             `${formatSpot(l.ppp)} MYR/USD (${formatPctChange(l.quoteChangePct)}, ${directionWords(l.direction)})`,
           ],
         ])}
@@ -100,10 +101,10 @@ function LaneRow({ lane, y, x }: { lane: Lane; y: number; x: (v: number) => numb
   return (
     <g>
       <text x={16} y={y + 18} fontSize={14} fontWeight={700} fill="var(--color-ink)">
-        {lane.key} · {lane.label}
+        {lane.key}: {lane.label}
         <tspan fontWeight={600} fill="var(--color-ink-2)">
           {'  '}
-          {lane.direction === 'appreciates' ? '↓' : lane.direction === 'depreciates' ? '↑' : '='} {directionWords(lane.direction)}
+          {directionWithQuote(lane.direction)}
         </tspan>
       </text>
       {!same && (

@@ -9,7 +9,7 @@ export function TraceSteps({ trace, title, stepClassName = '' }: { trace: Trace;
       <ol className="space-y-2">
         {trace.steps.map((step, k) => (
           <li key={k} className={`rounded-xl bg-surface-2 px-4 py-2 ${stepClassName}`}>
-            <p className="text-xs font-bold uppercase tracking-wide text-ink-3">
+            <p className="text-sm font-semibold text-ink-2">
               {k + 1}. {step.label}
             </p>
             <Tex tex={step.tex} display className="text-ink" />

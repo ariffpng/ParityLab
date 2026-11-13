@@ -1,4 +1,4 @@
-import { useMemo, useState, type ComponentType, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { evaluate, type Evaluation } from '../lib/evaluate';
 import { calculate, type Inputs, type Results } from '../lib/finance';
 import { inputsToRaw, type RawInputs } from '../lib/validation';
@@ -9,11 +9,9 @@ import { MODEL_ASSUMPTIONS, TESTS_NOTE } from '../content/about';
 import {
   getTopic,
   neighbours,
-  readingMinutes,
   TOPIC_GROUPS,
   TOPICS,
   type Topic,
-  type TopicIcon,
   type TopicId,
 } from '../content/topics';
 import { learnRoute } from '../routes';
@@ -39,38 +37,12 @@ import { RouteLink } from '../components/RouteLink';
 import { PageBand } from '../components/PageBand';
 import {
   AlertIcon,
-  ApproxIcon,
   ArrowLeftIcon,
   ArrowRightIcon,
-  BasketIcon,
-  BookIcon,
-  EqualIcon,
-  InfoIcon,
-  LabIcon,
-  PercentIcon,
-  RouteIcon,
-  ShieldIcon,
-  SwapIcon,
-  TableIcon,
-  TelescopeIcon,
 } from '../components/Icons';
 
 type Props = { topic?: TopicId; simEval: Evaluation; onOpenInSimulator: (raw: RawInputs) => void };
 
-const ICONS: Record<TopicIcon, ComponentType<{ className?: string }>> = {
-  swap: SwapIcon,
-  percent: PercentIcon,
-  approx: ApproxIcon,
-  book: BookIcon,
-  basket: BasketIcon,
-  route: RouteIcon,
-  telescope: TelescopeIcon,
-  equal: EqualIcon,
-  lab: LabIcon,
-  table: TableIcon,
-  shield: ShieldIcon,
-  info: InfoIcon,
-};
 
 export function LearnView({ topic, simEval, onOpenInSimulator }: Props) {
   return topic ? (
@@ -83,44 +55,56 @@ export function LearnView({ topic, simEval, onOpenInSimulator }: Props) {
 /* ---------- Hub ---------- */
 
 function Hub() {
+  let n = 0;
   return (
     <>
       <PageBand title="Learn More">
-        <p className="mt-2 text-lg text-on-panel-2">Short topics, from the basics to the deeper theory.</p>
+        <p className="mt-2 text-lg text-on-panel-2">Twelve short topics in reading order, from the basics to the deeper theory.</p>
       </PageBand>
       <div className="page pb-16">
-        {TOPIC_GROUPS.map((group) => (
-          <section key={group.id} className="mt-12" aria-labelledby={`group-${group.id}`}>
-            <h2 id={`group-${group.id}`} className="text-xl font-bold text-ink">
-              {group.title}
-            </h2>
-            <ul className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {TOPICS.filter((t) => t.group === group.id).map((t) => (
-                <li key={t.id}>
-                  <TopicCard topic={t} />
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
+        <div className="mt-12 grid gap-x-10 gap-y-12 lg:grid-cols-3">
+          {TOPIC_GROUPS.map((group) => (
+            <section key={group.id} aria-labelledby={`group-${group.id}`}>
+              <h2 id={`group-${group.id}`} className="border-b-2 border-ink pb-3 text-xl font-bold text-ink">
+                {group.title}
+              </h2>
+              <ol className="divide-y divide-line">
+                {TOPICS.filter((t) => t.group === group.id).map((t) => {
+                  n += 1;
+                  return (
+                    <li key={t.id}>
+                      <TopicRow topic={t} number={n} start={n === 1} />
+                    </li>
+                  );
+                })}
+              </ol>
+            </section>
+          ))}
+        </div>
       </div>
     </>
   );
 }
 
-function TopicCard({ topic }: { topic: Topic }) {
-  const Icon = ICONS[topic.icon];
+/** One topic in the reading path: its number, title and one-line teaser. The first is marked "Start here". */
+function TopicRow({ topic, number, start }: { topic: Topic; number: number; start: boolean }) {
   return (
     <RouteLink
       to={learnRoute(topic.id)}
-      className="card group flex h-full flex-col p-6 no-underline transition-colors hover:border-ink"
+      className="group grid grid-cols-[2rem_minmax(0,1fr)] gap-x-3 rounded-lg py-4 no-underline [outline-offset:2px]"
     >
-      <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent-soft text-ink" aria-hidden="true">
-        <Icon className="h-6 w-6" />
+      <span className="pt-0.5 text-lg font-bold tabular text-ink-3" aria-hidden="true">
+        {number}
       </span>
-      <span className="mt-4 text-lg font-bold text-ink group-hover:underline">{topic.title}</span>
-      <span className="mt-2 text-base text-ink-2">{topic.teaser}</span>
-      <span className="tag mt-4 self-start">{readingMinutes(topic)} min read</span>
+      <span className="min-w-0">
+        <span className="flex flex-wrap items-center gap-2">
+          <span className="text-lg font-bold text-ink underline decoration-transparent decoration-2 underline-offset-4 transition-colors group-hover:decoration-accent">
+            {topic.title}
+          </span>
+          {start && <span className="tag border-accent-strong bg-accent-soft text-ink">Start here</span>}
+        </span>
+        <span className="mt-1 block text-base text-ink-2">{topic.teaser}</span>
+      </span>
     </RouteLink>
   );
 }
@@ -168,10 +152,11 @@ function TopicPage({
             <h1 id="topic-title" tabIndex={-1} className="view-heading mt-4 text-2xl font-bold">
               {topic.title}
             </h1>
-            <span className="tag tag-dark mt-4">{readingMinutes(topic)} min read</span>
             <div className="mt-6 space-y-2 text-lg text-on-panel-2">
               {topic.intro.map((p) => (
-                <p key={p}>{p}</p>
+                <p key={p}>
+                  <RichText text={p} />
+                </p>
               ))}
             </div>
           </div>
@@ -208,7 +193,9 @@ function TopicPage({
             <Block title="In more detail">
               <div className="space-y-4 text-ink">
                 {topic.details.map((d) => (
-                  <p key={d}>{d}</p>
+                  <p key={d} className="max-w-[70ch]">
+                    <RichText text={d} />
+                  </p>
                 ))}
               </div>
               {topic.equations.length > 0 && (

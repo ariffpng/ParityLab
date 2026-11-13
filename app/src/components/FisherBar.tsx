@@ -7,7 +7,7 @@ type Props = { r: Results; country: 'MY' | 'US'; domain: [number, number] };
 const FILL = {
   real: 'var(--color-ink-2)',
   inflation: { MY: 'var(--color-my)', US: 'var(--color-us)' },
-  cross: 'var(--color-accent)',
+  cross: 'var(--color-line-strong)',
 };
 
 /**
@@ -20,7 +20,7 @@ export function FisherBar({ r, country, domain }: Props) {
   const span = hi - lo || 1;
   const x = (v: number) => ((v - lo) / span) * 100;
   const [real, inflation, cross] = parts;
-  const label = `${country === 'MY' ? 'Malaysia' : 'US'}: real rate ${formatInputPct(real.value)} + expected inflation ${formatInputPct(inflation.value)} + cross-term ${fixed(cross.value, 4)} pp = nominal rate ${formatRate(total)}`;
+  const label = `${country === 'MY' ? 'Malaysia' : 'US'}: real rate ${formatInputPct(real.value)} + expected inflation ${formatInputPct(inflation.value)} + real × inflation ${fixed(cross.value, 4)}% = nominal rate ${formatRate(total)}`;
 
   return (
     <div>
@@ -70,8 +70,8 @@ export function FisherBar({ r, country, domain }: Props) {
           <span className="tabular font-semibold text-ink">{formatInputPct(inflation.value)}</span> inflation
         </li>
         <li className="inline-flex items-center gap-1 whitespace-nowrap">
-          <span className="h-2.5 w-2.5 rounded-sm bg-accent" />
-          <span className="tabular font-semibold text-ink">{fixed(cross.value, 4)}</span> r×π
+          <span className="h-2.5 w-2.5 rounded-sm bg-line-strong" />
+          <span className="tabular font-semibold text-ink">{fixed(cross.value, 4)}%</span> real × inflation
         </li>
       </ul>
     </div>

@@ -2,6 +2,7 @@ import { compareInputs, compareResults, type MetricKind } from '../lib/compariso
 import type { NamedScenario } from '../lib/exportSummary';
 import { formatInputPct, formatPctChange, formatPp, formatRate, formatSpotChange, formatSpotUnit } from '../lib/format';
 import { DirectionBadge } from './DirectionBadge';
+import { relativeDirection, relativeDirectionText } from '../lib/directionCopy';
 
 function levelText(kind: MetricKind, v: number): string {
   switch (kind) {
@@ -20,13 +21,13 @@ function levelText(kind: MetricKind, v: number): string {
 export function SimpleCompareTable({ a, b }: { a: NamedScenario; b: NamedScenario }) {
   const rows = [
     {
-      label: 'Malaysia rate',
+      label: 'Malaysia nominal rate (Fisher)',
       a: formatRate(a.results.nominalMYPct),
       b: formatRate(b.results.nominalMYPct),
       change: formatPp(b.results.nominalMYPct - a.results.nominalMYPct),
     },
     {
-      label: 'US rate',
+      label: 'US nominal rate (Fisher)',
       a: formatRate(a.results.nominalUSPct),
       b: formatRate(b.results.nominalUSPct),
       change: formatPp(b.results.nominalUSPct - a.results.nominalUSPct),
@@ -45,10 +46,10 @@ export function SimpleCompareTable({ a, b }: { a: NamedScenario; b: NamedScenari
           <tr>
             <th scope="col">Result</th>
             <th scope="col" className="num">
-              A · {a.label}
+              A: {a.label}
             </th>
             <th scope="col" className="num">
-              B · {b.label}
+              B: {b.label}
             </th>
             <th scope="col" className="num">
               Change (B − A)
@@ -76,7 +77,9 @@ export function SimpleCompareTable({ a, b }: { a: NamedScenario; b: NamedScenari
             <td className="num">
               <DirectionBadge direction={b.results.myrDirection} />
             </td>
-            <td className="num">—</td>
+            <td className="num font-semibold" data-testid="relative-direction">
+              {relativeDirectionText(relativeDirection(a.results.pppSpot, b.results.pppSpot))}
+            </td>
           </tr>
         </tbody>
       </table>

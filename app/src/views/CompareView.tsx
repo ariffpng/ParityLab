@@ -17,6 +17,10 @@ import { LearnMoreLink } from '../components/RouteLink';
 import { SensitivityCurve } from '../components/SensitivityCurve';
 import { SensitivityTable } from '../components/SensitivityTable';
 import { PageBand } from '../components/PageBand';
+import { KeepHeight } from '../components/KeepHeight';
+import { ResultAnnouncer } from '../components/ResultAnnouncer';
+import { compareConclusion, resultAnnouncement } from '../lib/directionCopy';
+import { Stack } from '../components/Stack';
 
 export type CompareTab = 'curve' | 'heatmap' | 'six';
 
@@ -47,17 +51,40 @@ export function CompareView(props: Props) {
 
   return (
     <>
-      <PageBand title="Compare scenarios" />
+      <PageBand title="Compare scenarios">
+        {/* The answer sits in the band. Both messages share one reserved box, so the page below never moves. */}
+        <Stack
+          className="mt-3 min-h-[7.5rem] max-w-4xl text-lg font-semibold text-on-panel sm:min-h-[4rem] lg:min-h-[2rem]"
+          show={b ? 0 : 1}
+          items={[
+            <p key="answer" data-testid="compare-conclusion">
+              {b ? compareConclusion(a.results.pppSpot, b.results.pppSpot) : ''}
+            </p>,
+            <p key="hidden">Fix the highlighted Scenario B field to see the comparison.</p>,
+          ]}
+        />
+      </PageBand>
       <div className="page space-y-6 pb-16 pt-8">
-        <ScenarioACard />
-        <ScenarioBEditor label={bLabel} raw={bRaw} evaluation={bEval} onChange={props.onBRawChange} onPreset={props.onBPreset} />
+        <section className="card p-6" aria-label="Scenarios">
+          <ScenarioARow />
+          <div className="mt-6 border-t border-line pt-6">
+            <ScenarioBEditor
+              label={bLabel}
+              raw={bRaw}
+              evaluation={bEval}
+              onChange={props.onBRawChange}
+              onPreset={props.onBPreset}
+            />
+          </div>
+        </section>
 
+        <KeepHeight hold={!b} className="space-y-6">
         {b ? (
           <>
             <section className="card p-6" aria-labelledby="dumbbell-heading" id="compare-chart">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <h2 id="dumbbell-heading" className="text-lg font-bold text-ink">
-                  Today → in one year
+                  Today and in one year
                 </h2>
                 <LearnMoreLink to={learnRoute('reading-rates')} about="reading exchange rates" />
               </div>
@@ -90,23 +117,11 @@ export function CompareView(props: Props) {
                   <ChevronIcon className={`h-4 w-4 transition-transform ${allRows ? 'rotate-180' : ''}`} />
                   Show all rows
                 </button>
-                <button
-                  type="button"
-                  className="btn btn-icon"
-                  onClick={props.onCopySummary}
-                  aria-label="Copy scenario summary"
-                  title={`Copy scenario summary. ${EXPORT_NOTE}`}
-                >
-                  <CopyIcon className="h-5 w-5" />
+                <button type="button" className="btn btn-sm" onClick={props.onCopySummary} title={EXPORT_NOTE}>
+                  <CopyIcon className="h-4 w-4" /> Copy summary
                 </button>
-                <button
-                  type="button"
-                  className="btn btn-icon"
-                  onClick={props.onDownloadCsv}
-                  aria-label="Download CSV"
-                  title={`Download CSV. ${EXPORT_NOTE}`}
-                >
-                  <DownloadIcon className="h-5 w-5" />
+                <button type="button" className="btn btn-sm" onClick={props.onDownloadCsv} title={EXPORT_NOTE}>
+                  <DownloadIcon className="h-4 w-4" /> Download CSV
                 </button>
               </div>
               <div className="mt-4" id={allRowsId}>
@@ -127,6 +142,13 @@ export function CompareView(props: Props) {
             <p className="mt-2 text-ink-2">Fix the highlighted Scenario B field to see the comparison.</p>
           </section>
         )}
+        </KeepHeight>
+        <ResultAnnouncer
+          hidden={!b}
+          message={
+            b ? resultAnnouncement(b.results, 'Scenario B') : 'Comparison hidden until the Scenario B inputs are fixed.'
+          }
+        />
       </div>
     </>
   );
@@ -137,8 +159,8 @@ const FIELDS: { key: FieldKey; label: string; dot?: 'my' | 'us' }[] = [
   { key: 'usInflation', label: 'US inflation', dot: 'us' },
 ];
 
-/** Scenario A: the locked baseline preset, read-only, on Scenario B's card spacing and grid. */
-function ScenarioACard() {
+/** Scenario A: the locked baseline preset, read-only, on Scenario B's spacing and grid. */
+function ScenarioARow() {
   const { name, inputs } = PRESETS.A;
   const items: { label: string; value: string; dot?: 'my' | 'us'; aside?: string }[] = [
     { label: 'Malaysia inflation', value: formatInputPct(inputs.myInflationPct), dot: 'my' },
@@ -148,7 +170,7 @@ function ScenarioACard() {
   ];
 
   return (
-    <section className="card p-6" aria-labelledby="a-card-heading" data-testid="scenario-a">
+    <section aria-labelledby="a-card-heading" data-testid="scenario-a">
       <h2 id="a-card-heading" className="flex min-w-0 items-center gap-2 text-lg font-bold text-ink">
         <span className="shrink-0">Scenario A</span>
         <span className="tag min-w-0">
@@ -201,7 +223,7 @@ function ScenarioBEditor({
     : [{ key: 'realRate', label: 'Real interest rate' }];
 
   return (
-    <section className="card p-6" aria-labelledby="b-editor-heading">
+    <section aria-labelledby="b-editor-heading">
       <h2 id="b-editor-heading" className="flex min-w-0 items-center gap-2 text-lg font-bold text-ink">
         <span className="shrink-0">Scenario B</span>
         <span className="tag min-w-0 truncate">{label}</span>

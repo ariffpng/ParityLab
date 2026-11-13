@@ -78,11 +78,11 @@ function Tag({
   price: ReactNode;
 }) {
   return (
-    <div className={`rounded-2xl border-2 p-6 text-center ${tone === 'my' ? 'border-my bg-my-soft' : 'border-us bg-us-soft'}`}>
-      <p className="text-sm font-bold uppercase tracking-wide text-ink-2">{country}</p>
+    <div className={`rounded-xl p-6 text-center ${tone === 'my' ? 'bg-my-soft' : 'bg-us-soft'}`}>
+      <p className="text-base font-bold text-ink">{country}</p>
       <BasketIcon className={`mx-auto mt-2 h-16 w-16 ${tone === 'my' ? 'text-my-ink' : 'text-us-ink'}`} />
       <p
-        className="mx-auto mt-4 inline-block rounded-lg bg-surface px-4 py-2 text-xl font-bold tabular text-ink shadow transition-transform duration-300 ease-out"
+        className="mx-auto mt-4 inline-block rounded-lg bg-surface px-4 py-2 text-xl font-bold tabular text-ink transition-transform duration-300 ease-out"
         style={{ transform: played ? 'scale(1.08) rotate(-2deg)' : 'none' }}
       >
         {price}

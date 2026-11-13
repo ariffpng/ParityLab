@@ -31,31 +31,31 @@ export function SensitivityTable({ extra = null }: Props) {
             <tr>
               <th scope="col">Case</th>
               <th scope="col" className="num">
-                π_MY
+                Malaysia inflation
               </th>
               <th scope="col" className="num">
-                π_US
+                US inflation
               </th>
               <th scope="col" className="num">
-                i_MY
+                Malaysia nominal rate
               </th>
               <th scope="col" className="num">
-                i_US
+                US nominal rate
               </th>
               <th scope="col" className="num">
-                i_MY − i_US
+                Rate gap (MY − US)
               </th>
               <th scope="col" className="num">
-                PPP spot
+                PPP future rate
               </th>
               <th scope="col" className="num">
-                CIP forward
+                Forward rate (theoretical)
               </th>
               <th scope="col" className="num">
-                Quote change
+                MYR/USD change
               </th>
               <th scope="col" className="num">
-                MYR value change
+                Ringgit value change
               </th>
               <th scope="col">Ringgit</th>
             </tr>

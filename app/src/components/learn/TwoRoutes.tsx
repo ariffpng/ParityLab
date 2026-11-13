@@ -23,12 +23,12 @@ export function TwoRoutes({ r }: { r: Results }) {
   return (
     <div>
       <div className="space-y-6">
-        <Route title="Route 1 · stay in Malaysia" tone="my">
+        <Route title="Route 1: stay in Malaysia" tone="my">
           <Station label="Start" value={money('RM', v.start)} visible />
           <Hop label={`invest at ${formatRate(r.nominalMYPct)}`} visible={shown(1)} />
           <Station label="After one year" value={money('RM', v.home)} visible={shown(1)} final testId="route-home" />
         </Route>
-        <Route title="Route 2 · go via the US" tone="us">
+        <Route title="Route 2: go via the US" tone="us">
           <Station label="Start" value={money('RM', v.start)} visible />
           <Hop label={`convert at ${formatSpot(r.spot)}`} visible={shown(2)} />
           <Station label="Today" value={money('US$', v.usdNow)} visible={shown(2)} />
@@ -109,7 +109,7 @@ function Station({
       className={`rounded-xl border px-4 py-2 transition-opacity duration-300 ${final ? 'border-accent bg-accent-soft' : 'border-line bg-surface'} ${visible ? 'opacity-100' : 'opacity-40'}`}
       data-testid={testId}
     >
-      <span className="block text-xs font-bold uppercase tracking-wide text-ink-3">{label}</span>
+      <span className="block text-sm font-semibold text-ink-2">{label}</span>
       {/* The value is always laid out (hidden until reached), so each box keeps its size. */}
       <span className="grid text-lg font-bold tabular text-ink">
         <span className={`col-start-1 row-start-1 ${visible ? '' : 'invisible'}`}>{value}</span>

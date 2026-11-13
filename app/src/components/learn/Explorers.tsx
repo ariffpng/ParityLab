@@ -75,9 +75,9 @@ export function RateExplorer({ spot, start }: { spot: number; start: number }) {
         />
       </div>
       <div className="mt-1 flex justify-between text-sm font-semibold">
-        <span className="text-up-ink">← Ringgit stronger</span>
+        <span className="text-up-ink">← Lower: ringgit stronger</span>
         <span className="text-ink-2">today {formatSpot(spot)}</span>
-        <span className="text-down-ink">Ringgit weaker →</span>
+        <span className="text-down-ink">Higher: ringgit weaker →</span>
       </div>
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         <p className="rounded-xl bg-surface-2 p-4 text-lg text-ink">
@@ -92,7 +92,7 @@ export function RateExplorer({ spot, start }: { spot: number; start: number }) {
       <div className="mt-4 flex flex-col items-start gap-2" aria-live="polite">
         <DirectionBadge direction={direction} size="lg" />
         <span className="text-sm tabular text-ink-2">
-          MYR/USD {formatPctChange(pctChange(spot, rate))} · ringgit value {formatPctChange(pctChange(rate, spot))}
+          MYR/USD {formatPctChange(pctChange(spot, rate))}; ringgit value {formatPctChange(pctChange(rate, spot))}
         </span>
       </div>
     </div>
@@ -137,7 +137,7 @@ export function FisherLab({ start }: { start: { realPct: number; inflationPct: n
         />
       </div>
       <p className="mt-6 text-center text-ink">
-        <span className="text-sm font-bold uppercase tracking-wide text-ink-3">Nominal interest rate (Fisher)</span>
+        <span className="text-sm font-semibold text-ink-2">Nominal interest rate (Fisher)</span>
         <span className="block text-2xl font-bold tabular">
           <TweenNumber value={exact} format={formatRate} testId="fisher-lab-value" />
         </span>

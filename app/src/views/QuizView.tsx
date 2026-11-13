@@ -1,15 +1,23 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { QUIZ } from '../content/quiz';
+import { getTopic } from '../content/topics';
 import type { QuizState } from '../components/Quiz';
 import { learnRoute } from '../routes';
-import { ArrowRightIcon, CheckIcon, ChevronIcon, CrossIcon, ResetIcon, TrophyIcon } from '../components/Icons';
+import { ArrowRightIcon, CheckIcon, ChevronIcon, CrossIcon, ResetIcon } from '../components/Icons';
+import { RichText } from '../components/RichText';
+import { Stack } from '../components/Stack';
 import { LearnMoreLink, RouteLink } from '../components/RouteLink';
 import { PageBand } from '../components/PageBand';
 
 type Props = { state: QuizState; onChange: (next: QuizState) => void };
 
 const LETTERS = ['A', 'B', 'C', 'D'];
-const CONFETTI = ['var(--color-accent)', 'var(--color-my)', 'var(--color-us)', 'var(--color-up)', 'var(--color-down)'];
+
+/** The next question after `from` that has no answer yet (QUIZ.length when none is left). */
+function nextOpen(answers: Record<string, string>, from: number): number {
+  for (let k = from + 1; k < QUIZ.length; k += 1) if (answers[QUIZ[k].id] === undefined) return k;
+  return QUIZ.length;
+}
 
 /** One question per screen; feedback appears only after the learner answers. */
 export function QuizView({ state, onChange }: Props) {
@@ -35,16 +43,16 @@ export function QuizView({ state, onChange }: Props) {
               style={{ width: `${(answered.length / total) * 100}%` }}
             />
           </div>
-          <span className="tag tag-dark w-28 justify-center text-sm tabular" aria-live="polite">
-            Score {score} / {answered.length}
-          </span>
+<p className="w-32 shrink-0 text-right text-base font-semibold tabular text-on-panel-2">
+            {done ? 'Finished' : `Question ${state.index + 1} of ${total}`}
+          </p>
         </div>
       </PageBand>
       <div className="page pb-16 pt-8">
         <div className="grid-12">
           <div className="col-span-12 lg:col-span-8 lg:col-start-3">
             {done ? (
-              <Finished score={score} total={total} onRestart={() => onChange({ index: 0, answers: {} })} />
+              <Finished state={state} score={score} total={total} onChange={onChange} />
             ) : (
               <Question key={QUIZ[state.index].id} state={state} onChange={onChange} autoFocus={state.index > 0} />
             )}
@@ -61,7 +69,8 @@ function Question({ state, onChange, autoFocus }: Props & { autoFocus: boolean }
   const locked = choice !== undefined;
   const correct = choice === item.correct;
   const correctText = item.options.find((o) => o.id === item.correct)?.text;
-  const last = state.index === QUIZ.length - 1;
+  const next = nextOpen(state.answers, state.index);
+  const last = next >= QUIZ.length;
   const [showCalc, setShowCalc] = useState(false);
   const calcId = useId();
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -77,10 +86,7 @@ function Question({ state, onChange, autoFocus }: Props & { autoFocus: boolean }
 
   return (
     <section aria-labelledby={`${item.id}-q`}>
-      <p className="eyebrow">
-        Question {state.index + 1} of {QUIZ.length}
-      </p>
-      <h2 id={`${item.id}-q`} ref={headingRef} tabIndex={-1} className="mt-2 text-xl font-bold text-ink">
+      <h2 id={`${item.id}-q`} ref={headingRef} tabIndex={-1} className="text-xl font-bold text-ink">
         {item.question}
       </h2>
       <div role="group" aria-labelledby={`${item.id}-q`} className="mt-6 grid gap-4">
@@ -129,7 +135,7 @@ function Question({ state, onChange, autoFocus }: Props & { autoFocus: boolean }
           ref={feedbackRef}
           tabIndex={-1}
           role="status"
-          className="fade-in mt-6 rounded-2xl bg-surface p-6 shadow-sm outline-none"
+          className="card fade-in mt-6 p-6 outline-none"
           data-testid="quiz-feedback"
         >
           <p className={`flex items-center gap-2 text-lg font-bold ${correct ? 'text-up-ink' : 'text-down-ink'}`}>
@@ -138,7 +144,7 @@ function Question({ state, onChange, autoFocus }: Props & { autoFocus: boolean }
           </p>
           <p className="mt-2 text-ink">{item.feedback}</p>
           <div className="mt-4 flex flex-wrap items-center gap-4">
-            <LearnMoreLink to={learnRoute(item.topic)} label="See why" />
+            <LearnMoreLink to={learnRoute(item.topic)} about={getTopic(item.topic).title} />
             <button
               type="button"
               className="inline-flex items-center gap-1 text-sm font-semibold text-ink underline"
@@ -152,18 +158,23 @@ function Question({ state, onChange, autoFocus }: Props & { autoFocus: boolean }
             <button
               type="button"
               className="btn btn-primary ml-auto"
-              onClick={() => onChange({ ...state, index: state.index + 1 })}
+              onClick={() => onChange({ ...state, index: next })}
             >
-              {last ? 'See your score' : 'Next question'} <ArrowRightIcon className="h-4 w-4" />
+              <Stack inline show={last ? 1 : 0} items={['Next question', 'See your score']} />
+              <ArrowRightIcon className="h-4 w-4" />
             </button>
           </div>
           <div id={calcId} hidden={!showCalc}>
             {showCalc && (
               <div className="mt-4 rounded-xl bg-surface-2 p-4">
-                <p className="text-sm text-ink">{item.explanation}</p>
-                <ul className="mt-2 space-y-1 font-mono text-sm text-ink">
+                <p className="text-sm text-ink">
+                  <RichText text={item.explanation} />
+                </p>
+                <ul className="mt-3 space-y-1 text-base tabular text-ink">
                   {item.calculation().map((line) => (
-                    <li key={line}>{line}</li>
+                    <li key={line}>
+                      <RichText text={line} />
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -175,42 +186,91 @@ function Question({ state, onChange, autoFocus }: Props & { autoFocus: boolean }
   );
 }
 
-function Finished({ score, total, onRestart }: { score: number; total: number; onRestart: () => void }) {
-  const perfect = score === total;
+/** The end of the quiz: a plain score, then every question with the learner's answer and the right one. */
+function Finished({
+  state,
+  score,
+  total,
+  onChange,
+}: {
+  state: QuizState;
+  score: number;
+  total: number;
+  onChange: (next: QuizState) => void;
+}) {
+  const missed = QUIZ.filter((q) => state.answers[q.id] !== q.correct);
+  const retryMissed = () => {
+    const answers = { ...state.answers };
+    for (const q of missed) delete answers[q.id];
+    onChange({ index: QUIZ.indexOf(missed[0]), answers });
+  };
+  const optionText = (q: (typeof QUIZ)[number], id: string | undefined) => q.options.find((o) => o.id === id)?.text ?? 'No answer';
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    headingRef.current?.focus();
+  }, []);
+
   return (
-    <section
-      className="relative overflow-hidden rounded-2xl bg-ink p-8 text-center text-on-panel on-dark"
-      data-testid="quiz-done"
-      aria-labelledby="quiz-done-h"
-    >
-      <div aria-hidden="true">
-        {Array.from({ length: 24 }, (_, k) => (
-          <span
-            key={k}
-            className="confetti"
-            style={{ left: `${(k * 37) % 100}%`, background: CONFETTI[k % CONFETTI.length], animationDelay: `${(k % 8) * 90}ms` }}
-          />
-        ))}
-      </div>
-      <span className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-accent text-on-accent">
-        <TrophyIcon className="h-10 w-10" />
-      </span>
-      <h2 id="quiz-done-h" className="mt-4 text-2xl font-extrabold">
-        Final score: {score} / {total}
+    <section data-testid="quiz-done" aria-labelledby="quiz-done-h">
+      <h2 id="quiz-done-h" ref={headingRef} tabIndex={-1} className="text-2xl font-bold text-ink outline-none">
+        You scored {score} out of {total}
       </h2>
-      <p className="mt-2 text-lg text-on-panel-2">
-        {perfect ? 'Every answer right — well done.' : 'Review the topics behind any misses, then try again.'}
+      <p className="mt-2 text-lg text-ink-2">
+        {missed.length === 0
+          ? 'Every answer was right.'
+          : `Read the topic behind each miss below, then retry ${missed.length === 1 ? 'it' : 'them'}.`}
       </p>
-      <div className="mt-6 flex flex-wrap justify-center gap-4">
-        <button type="button" className="btn btn-primary btn-lg" onClick={onRestart}>
-          <ResetIcon className="h-5 w-5" /> Try again
+      <div className="mt-6 flex flex-wrap gap-4">
+        {missed.length > 0 && (
+          <button type="button" className="btn btn-primary btn-lg" onClick={retryMissed}>
+            <ResetIcon className="h-5 w-5" /> Retry missed questions
+          </button>
+        )}
+        <button
+          type="button"
+          className={`btn btn-lg ${missed.length === 0 ? 'btn-primary' : ''}`}
+          onClick={() => onChange({ index: 0, answers: {} })}
+        >
+          Start again
         </button>
-        <RouteLink to={{ view: 'learn' }} className="btn btn-lg btn-dark">
-          Learn More
-        </RouteLink>
       </div>
-      <p className="mt-6 text-sm text-on-panel-2">
-        Answers are kept only while this page is open; nothing is stored or sent anywhere.
+
+      <ol className="mt-10 divide-y divide-line border-y border-line" aria-label="Your answers">
+        {QUIZ.map((q, k) => {
+          const right = state.answers[q.id] === q.correct;
+          return (
+            <li key={q.id} className="grid gap-2 py-6 sm:grid-cols-[2.5rem_minmax(0,1fr)]">
+              <span
+                className={`flex h-8 w-8 items-center justify-center rounded-full ${right ? 'bg-up-soft text-up-ink' : 'bg-down-soft text-down-ink'}`}
+                aria-hidden="true"
+              >
+                {right ? <CheckIcon className="h-4 w-4" /> : <CrossIcon className="h-4 w-4" />}
+              </span>
+              <div className="min-w-0">
+                <p className="font-semibold text-ink">
+                  <span className="sr-only">{right ? 'Right' : 'Missed'}: </span>
+                  {k + 1}. {q.question}
+                </p>
+                {right ? (
+                  <p className="mt-1 text-ink-2">Your answer: {optionText(q, state.answers[q.id])}</p>
+                ) : (
+                  <>
+                    <p className="mt-1 text-ink-2">Your answer: {optionText(q, state.answers[q.id])}</p>
+                    <p className="mt-1 text-ink">Correct answer: {optionText(q, q.correct)}</p>
+                    <p className="mt-2">
+                      <LearnMoreLink to={learnRoute(q.topic)} about={getTopic(q.topic).title} />
+                    </p>
+                  </>
+                )}
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+      <p className="mt-6">
+        <RouteLink to={{ view: 'learn' }} className="link-more">
+          All Learn More topics
+        </RouteLink>
       </p>
     </section>
   );

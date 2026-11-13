@@ -2,6 +2,7 @@ import { useId, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent
 import { myrDirection, pppSpot } from '../lib/finance';
 import { formatInputPct, formatSpot } from '../lib/format';
 import { directionWords } from '../lib/interpretation';
+import { DirectionBadge } from './DirectionBadge';
 import { CURVE_MAX, CURVE_MIN, curvePoints, snapCurveValue } from '../lib/visuals';
 import { ChevronIcon } from './Icons';
 import { niceTicks, tickDecimals, useElementWidth } from './useElementWidth';
@@ -45,7 +46,8 @@ export function SensitivityCurve({ myInflationPct, spot, usInflationPct, onChang
 
   const shown = Math.min(CURVE_MAX, Math.max(CURVE_MIN, usInflationPct));
   const value = pppSpot(spot, myInflationPct / 100, shown / 100);
-  const words = directionWords(myrDirection(myInflationPct / 100, shown / 100));
+  const direction = myrDirection(myInflationPct / 100, shown / 100);
+  const words = directionWords(direction);
   const valueText = `US inflation ${formatInputPct(shown)}: PPP future rate ${formatSpot(value)} MYR/USD, ${words.toLowerCase()}`;
   const s0y = sy(spot);
   const px = sx(shown);
@@ -76,12 +78,16 @@ export function SensitivityCurve({ myInflationPct, spot, usInflationPct, onChang
 
   return (
     <figure className="m-0">
-      {/* One fixed-height line, so the chart (and its draggable point) never moves as the values change. */}
-      <p className="mb-2 flex h-8 items-baseline gap-x-4 overflow-hidden whitespace-nowrap text-ink" aria-hidden="true">
-        <span className="text-sm text-ink-2">π_US = {formatInputPct(shown)}</span>
-        <span className="text-lg font-bold tabular">{formatSpot(value)} MYR/USD</span>
-        <span className="text-sm font-semibold text-ink-2">{words}</span>
-      </p>
+      {/* Two fixed-height rows, so the chart (and its draggable point) never moves as the values change. */}
+      <div className="mb-3 grid gap-1" aria-hidden="true">
+        <p className="flex h-8 items-baseline gap-x-3 overflow-hidden whitespace-nowrap text-ink">
+          <span className="text-sm text-ink-2">US inflation {formatInputPct(shown)}</span>
+          <span className="text-lg font-bold tabular">{formatSpot(value)} MYR/USD</span>
+        </p>
+        <p className="flex h-8 items-center">
+          <DirectionBadge direction={direction} />
+        </p>
+      </div>
       <div ref={ref} className="w-full">
         <svg
           width={width}
@@ -108,10 +114,10 @@ export function SensitivityCurve({ myInflationPct, spot, usInflationPct, onChang
             fontWeight={700}
             fill="var(--color-down-ink)"
           >
-            ↑ Ringgit weaker
+            ↑ Higher MYR/USD: ringgit weaker
           </text>
           <text x={m.left + 8} y={m.top + plotH - 10} fontSize={13} fontWeight={700} fill="var(--color-up-ink)">
-            ↓ Ringgit stronger
+            ↓ Lower MYR/USD: ringgit stronger
           </text>
 
           {yTicks.map((t) => (
@@ -152,7 +158,7 @@ export function SensitivityCurve({ myInflationPct, spot, usInflationPct, onChang
             strokeWidth={1.5}
           />
           <text x={m.left + plotW / 2} y={height - 8} textAnchor="middle" fontSize={13} fontWeight={700} fill="var(--color-ink)">
-            US inflation (π_US)
+            US inflation
           </text>
           <text
             transform={`translate(16 ${m.top + plotH / 2}) rotate(-90)`}
@@ -217,7 +223,7 @@ export function SensitivityCurve({ myInflationPct, spot, usInflationPct, onChang
           <table className="data-table max-w-md">
             <thead>
               <tr>
-                <th scope="col">π_US</th>
+                <th scope="col">US inflation</th>
                 <th scope="col" className="num">
                   PPP future rate (MYR/USD)
                 </th>

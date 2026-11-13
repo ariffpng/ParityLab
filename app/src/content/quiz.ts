@@ -26,15 +26,15 @@ export const QUIZ: QuizItem[] = [
   {
     id: 'q1',
     question:
-      'US expected inflation rises while Malaysian expected inflation stays fixed (equal real rates, same spot rate). In this model, what happens to the PPP-implied MYR/USD rate?',
+      'US expected inflation rises and everything else stays the same. In this model, what happens to the PPP future rate (MYR/USD)?',
     options: [
-      { id: 'a', text: 'It rises — the ringgit depreciates' },
-      { id: 'b', text: 'It falls — the ringgit appreciates' },
+      { id: 'a', text: 'It rises: the ringgit depreciates' },
+      { id: 'b', text: 'It falls: the ringgit appreciates' },
       { id: 'c', text: 'It stays the same' },
       { id: 'd', text: 'It cannot be determined from PPP' },
     ],
     correct: 'b',
-    feedback: 'US inflation sits in the denominator of the PPP ratio, so MYR/USD falls and the ringgit strengthens in the model.',
+    feedback: 'Higher US inflation lowers MYR/USD in the model: US$1 costs fewer ringgit, so the ringgit is stronger.',
     topic: 'ppp',
     explanation:
       'US inflation sits in the denominator of S₀ × (1 + π_MY)/(1 + π_US). A bigger denominator gives a smaller MYR/USD number: USD 1 costs fewer ringgit, so the MYR appreciates — within the model only.',
@@ -51,9 +51,9 @@ export const QUIZ: QuizItem[] = [
     id: 'q2',
     question: 'MYR/USD moves from 4.4000 to 4.5073. Did the ringgit strengthen or weaken?',
     options: [
-      { id: 'a', text: 'Strengthened — the number went up' },
-      { id: 'b', text: 'Neither — only the US dollar changed' },
-      { id: 'c', text: 'Weakened — USD 1 now costs more ringgit' },
+      { id: 'a', text: 'Strengthened: the number went up' },
+      { id: 'b', text: 'Neither: only the US dollar changed' },
+      { id: 'c', text: 'Weakened: USD 1 now costs more ringgit' },
       { id: 'd', text: 'It depends on the forward rate' },
     ],
     correct: 'c',
@@ -90,12 +90,12 @@ export const QUIZ: QuizItem[] = [
   },
   {
     id: 'q4',
-    question: 'Is the covered-IRP forward rate a guaranteed forecast of the future spot rate?',
+    question: 'Is the forward rate (theoretical) a guaranteed forecast of next year’s exchange rate?',
     options: [
-      { id: 'a', text: 'Yes — it is what the spot rate will be in one year' },
-      { id: 'b', text: 'No — it is a contract price set by no-arbitrage, not a forecast' },
+      { id: 'a', text: 'Yes: it is what the spot rate will be in one year' },
+      { id: 'b', text: 'No: it is a contract price fixed today, not a forecast' },
       { id: 'c', text: 'Yes, whenever PPP gives the same number' },
-      { id: 'd', text: 'No — it is the central bank’s policy rate' },
+      { id: 'd', text: 'No: it is the central bank’s policy rate' },
     ],
     correct: 'b',
     feedback: 'A forward is a price agreed today under no-arbitrage, not a forecast of the future spot rate.',
@@ -112,7 +112,7 @@ export const QUIZ: QuizItem[] = [
   },
   {
     id: 'q5',
-    question: 'Why do the PPP-implied spot and the CIP forward give the same number in core mode?',
+    question: 'Why do the PPP future rate and the forward rate give the same number here?',
     options: [
       { id: 'a', text: 'Because forward rates always equal future spot rates' },
       { id: 'b', text: 'Because the spot rate is fixed at 4.4000' },

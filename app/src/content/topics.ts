@@ -8,7 +8,7 @@ import { formatPctChange, formatPpAbs, formatSpotUnit } from '../lib/format';
 import { CANNOT_CLAIM, SCENARIO_B_CAVEAT } from '../lib/interpretation';
 import { PRESETS } from '../lib/scenarios';
 import { AUDIENCE, CONFUSIONS, MODEL_ASSUMPTIONS, OBJECTIVES, TESTS_NOTE } from './about';
-import { EQUATIONS, type EquationId, CIP_DERIVATION, NOTATION } from './formulas';
+import { type EquationId, CIP_DERIVATION, NOTATION } from './formulas';
 import { GLOSSARY } from './glossary';
 import { LIMITATIONS } from './limitations';
 import { REFERENCES } from './references';
@@ -29,15 +29,11 @@ export type TopicId =
 
 export type TopicGroup = 'basics' | 'theories' | 'deeper';
 
-export type TopicIcon =
-  'swap' | 'percent' | 'approx' | 'book' | 'basket' | 'route' | 'telescope' | 'equal' | 'lab' | 'table' | 'shield' | 'info';
-
 export type Topic = {
   id: TopicId;
   group: TopicGroup;
   title: string;
   teaser: string;
-  icon: TopicIcon;
   /** 1–2 plain-language sentences shown first. */
   intro: string[];
   /** "In more detail": paragraphs moved from v1 explanations. */
@@ -66,7 +62,6 @@ export const TOPICS: Topic[] = [
     group: 'basics',
     title: 'Reading exchange rates',
     teaser: 'What MYR/USD means, and which way is stronger.',
-    icon: 'swap',
     intro: [
       'MYR/USD is the number of ringgit you pay for one US dollar.',
       'A lower number means the ringgit is stronger; a higher number means it is weaker.',
@@ -88,7 +83,6 @@ export const TOPICS: Topic[] = [
     group: 'basics',
     title: 'Nominal vs real — the Fisher Effect',
     teaser: 'Why a 1.5% real rate becomes 4.0375%.',
-    icon: 'percent',
     intro: ['A nominal interest rate is the rate in money terms. The real rate is what is left after expected inflation.'],
     details: [
       'Fisher: 1 + i = (1 + r)(1 + π). The nominal rate is the real rate plus expected inflation plus a small cross-term r × π, which the shortcut i ≈ r + π leaves out.',
@@ -107,7 +101,6 @@ export const TOPICS: Topic[] = [
     group: 'basics',
     title: 'Exact vs approximate formulas',
     teaser: 'The classroom shortcuts, and how far off they are.',
-    icon: 'approx',
     intro: [
       'Textbooks often use shortcuts such as i ≈ r + π. ParityLab always calculates with the exact formula and shows the shortcut only for comparison.',
     ],
@@ -127,7 +120,6 @@ export const TOPICS: Topic[] = [
     group: 'basics',
     title: 'Glossary',
     teaser: 'Plain definitions of every term used.',
-    icon: 'book',
     intro: ['Short definitions of the terms used in ParityLab. Type in the box to filter them.'],
     details: [
       'A difference between two rates is in percentage points (pp); a change in a level, such as an exchange rate, is in percent (%).',
@@ -141,7 +133,6 @@ export const TOPICS: Topic[] = [
     group: 'theories',
     title: 'Purchasing Power Parity',
     teaser: 'How an inflation gap moves the exchange rate.',
-    icon: 'basket',
     intro: [
       'If prices rise faster in one country, its money buys less. Relative PPP turns the inflation gap into an implied future exchange rate.',
     ],
@@ -163,7 +154,6 @@ export const TOPICS: Topic[] = [
     group: 'theories',
     title: 'Covered Interest Rate Parity',
     teaser: 'Two ways to invest RM 1 must pay the same.',
-    icon: 'route',
     intro: [
       'Investing at home, or converting, investing abroad and locking in the rate back with a forward, must pay the same. That no-arbitrage rule sets the forward rate.',
     ],
@@ -185,7 +175,6 @@ export const TOPICS: Topic[] = [
     group: 'theories',
     title: 'International Fisher Effect',
     teaser: 'Same algebra as the forward, different meaning.',
-    icon: 'telescope',
     intro: [
       'The International Fisher Effect links the interest-rate gap to the expected change in the spot rate. Same formula as covered IRP, but it gives an expectation, not a price.',
     ],
@@ -205,7 +194,6 @@ export const TOPICS: Topic[] = [
     group: 'theories',
     title: 'Why the forward equals PPP here',
     teaser: 'The shared real rate cancels out.',
-    icon: 'equal',
     intro: [
       'In core mode both countries share one real rate. That common factor cancels, so the forward and the PPP rate come out as the same number.',
     ],
@@ -225,7 +213,6 @@ export const TOPICS: Topic[] = [
     group: 'deeper',
     title: 'When PPP and the forward disagree',
     teaser: 'Give each country its own real rate.',
-    icon: 'lab',
     intro: [
       'Give Malaysia and the US different real rates and the (1 + r) factors no longer cancel. The forward and the PPP rate split apart.',
     ],
@@ -245,7 +232,6 @@ export const TOPICS: Topic[] = [
     group: 'deeper',
     title: 'Six example scenarios',
     teaser: 'Cases A–F side by side, worked out in your browser.',
-    icon: 'table',
     intro: [
       'Six one-year scenarios from the same spot rate show how the inflation gap drives the result. Every number is calculated in your browser by the engine.',
     ],
@@ -261,7 +247,6 @@ export const TOPICS: Topic[] = [
     group: 'deeper',
     title: 'What this model can’t tell you',
     teaser: 'Where the clean maths stops.',
-    icon: 'shield',
     intro: [
       'ParityLab shows what simple parity theory implies. Real exchange rates are driven by much more, so treat every result as a teaching scenario.',
     ],
@@ -283,7 +268,6 @@ export const TOPICS: Topic[] = [
     group: 'deeper',
     title: 'References and About',
     teaser: 'Course, sources and how the numbers are checked.',
-    icon: 'info',
     intro: ['ParityLab is a teaching tool for UTP GFB3043 / GEB3043 International Financial Management (CLO3).'],
     details: [AUDIENCE],
     equations: [],
@@ -312,21 +296,4 @@ export function getTopic(id: TopicId): Topic {
 export function neighbours(id: TopicId): { prev: Topic | null; next: Topic | null } {
   const k = TOPIC_IDS.indexOf(id);
   return { prev: k > 0 ? TOPICS[k - 1] : null, next: k < TOPICS.length - 1 ? TOPICS[k + 1] : null };
-}
-
-function countWords(text: string): number {
-  return text.split(/\s+/).filter((w) => /\p{L}/u.test(w)).length;
-}
-
-/** Reading time at 200 words per minute, from the topic's own text (minimum 1 minute). */
-export function readingMinutes(topic: Topic): number {
-  const text = [
-    topic.title,
-    ...topic.intro,
-    ...topic.details,
-    ...topic.assumptions,
-    ...topic.equations.map((e) => `${EQUATIONS[e].name} ${EQUATIONS[e].note ?? ''}`),
-    ...(topic.extraText ?? []),
-  ].join(' ');
-  return Math.max(1, Math.ceil(countWords(text) / 200));
 }

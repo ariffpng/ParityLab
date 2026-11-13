@@ -195,7 +195,10 @@ function Level({ value }: { value: number }) {
 function Arrow({ label, width, pulse }: { label: string; width: number; pulse: number }) {
   return (
     <div className="flex h-8 items-center justify-center gap-2 px-2 lg:h-auto lg:flex-col lg:gap-0" aria-hidden="true">
-      <span className="text-xs font-bold tabular text-ink-2 lg:order-first">{label}</span>
+      <span className="flex items-baseline gap-1 whitespace-nowrap lg:order-first lg:flex-col lg:items-center lg:gap-0">
+        <span className="text-xs font-bold tabular text-ink-2">{label}</span>
+        <span className="text-xs text-ink-3">MY − US</span>
+      </span>
       <svg viewBox="0 0 48 24" className="h-6 w-10 rotate-90 lg:w-12 lg:rotate-0" key={pulse}>
         <line
           x1="2"
