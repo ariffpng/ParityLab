@@ -603,7 +603,7 @@ describe('Group number', () => {
     expect(screen.getByText('Nur Nafiesa Binti Nor Haizon (22005608)')).toBeInTheDocument();
     expect(screen.getByText('Nursyasya Batrisyia Binti Zulkiflee (22003205)')).toBeInTheDocument();
     expect(screen.getByText('Bachelor of Computer Science (Hons)', { selector: 'dd' })).toBeInTheDocument();
-    expect(screen.getByText(/^Generative AI tools were used in this project\. Claude Code was used/)).toBeInTheDocument();
+    expect(screen.getByText(/^Claude Code was used to help build the ParityLab web application/)).toBeInTheDocument();
     expect(document.body.textContent).not.toMatch(/to be completed|To be written/);
   });
 });

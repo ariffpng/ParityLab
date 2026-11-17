@@ -212,8 +212,5 @@ The team list and the disclosure below are also shown on the app's References an
 
 ### AI-use disclosure
 
-> Generative AI tools were used in this project. Claude Code was used to write the ParityLab web application, its
-> automated tests, the independent Python verification script and the project documentation. All formulas, scenarios
-> and reference values come from the group’s project report and the course materials. All rates are hypothetical
-> teaching values. The group takes full responsibility for all submitted work. No personal or private data was given
-> to any AI tool.
+> Claude Code was used to help build the ParityLab web application, its automated tests and the independent Python
+> verification script.
